@@ -1,5 +1,7 @@
 # UE LQA Dump 数据上传工具
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 通用、配置驱动的 LQA UI-dump 数据上传脚本, 扫描数据目录中由 LQA 采集工具产出的 dump 记录, 将快照 JSON 规整为平台所需结构后, 通过 HTTP API 逐条上传
 
 ## 目录结构

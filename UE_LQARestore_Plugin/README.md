@@ -1,5 +1,7 @@
 # LQARestore 插件
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 ## 项目简介
 
 LQARestore 是一个虚幻引擎 (Unreal Engine) 工程, 核心功能通过 `LQARestore` 插件实现

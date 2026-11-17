@@ -3,7 +3,7 @@ name = "lqa-server"
 version = "1.0.0"
 description = "LQA 本地化质量检测平台 - 后端服务"
 authors = ["LQA Contributors"]
-license = "MIT"
+license = "Apache-2.0"
 readme = "README.md"
 package-mode = false
 

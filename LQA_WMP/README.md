@@ -1,5 +1,7 @@
 # LQA — 本地化质量检查平台
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 LQA (Localization Quality Assurance) 是一个面向游戏 / 应用多语言版本的本地化质量检查平台, 还原端 (如 UE/Unity 编辑器插件) 按任务批量生成各语言截图并上传, 平台调用 AI 识别服务检测 **漏译、错译、超框** 等问题, 测试人员审核结果后一键提交到缺陷系统, 并支持修复后的 **回归验证**
 
 ---
@@ -112,6 +114,6 @@ LQA-WMP/
 
 ## 许可证
 
-本项目后端代码以 **MIT License** 开源
+本项目后端代码以 **Apache-2.0** 开源，详见 [LICENSE](LICENSE)。
 
 ---

@@ -45,4 +45,4 @@
 
 ## 许可证
 
-提交代码即表示你同意将贡献以 [MIT License](LICENSE) 授权给本项目
+提交代码即表示你同意将贡献以 [Apache-2.0 License](LICENSE) 授权给本项目

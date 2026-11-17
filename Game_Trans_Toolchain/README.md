@@ -8,6 +8,7 @@
 <p align="center">
   <a href="https://www.python.org/"><img alt="Python 3.8+" src="https://img.shields.io/badge/python-3.8+-blue.svg"></a>
   <a href="./docs/architecture.md"><img alt="Architecture" src="https://img.shields.io/badge/docs-architecture-blue.svg"></a>
+  <a href="../LICENSE.txt"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue"></a>
 </p>
 
 <p align="center">

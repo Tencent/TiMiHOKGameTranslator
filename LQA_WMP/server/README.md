@@ -1,5 +1,7 @@
 # LQA Server
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 Python 3.12 + Django 5.1 + Celery 5，数据库 MySQL 8，缓存/会话/任务队列 Redis。
 
 ## 本地开发

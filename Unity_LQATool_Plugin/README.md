@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Supported Platforms](https://img.shields.io/badge/platform-Win64%20|%20Mac%20|%20iOS%20|%20Android-lightgrey)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
 
 ---
 

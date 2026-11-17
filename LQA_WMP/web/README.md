@@ -1,5 +1,7 @@
 # LQA Web
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 Vue 3 + Vite 5 + TypeScript + Element Plus + fast-crud，基于 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)。
 
 ## 本地开发
@@ -47,4 +49,4 @@ pnpm test
 
 ## 许可证
 
-本目录基于 v3-admin-vite，保留其 MIT 许可证，见 [LICENSE](LICENSE)。
+本目录基于 v3-admin-vite，现以 **Apache-2.0** 开源，详见 [LICENSE](../LICENSE)。

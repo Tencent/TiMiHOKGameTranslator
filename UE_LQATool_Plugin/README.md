@@ -1,5 +1,7 @@
 # LQATool 插件
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 ## 插件简介
 
 **LQATool** 是一个运行时 Unreal Engine 插件, 面向本地化团队提供语言质量与界面布局的可视化检测能力

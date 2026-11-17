@@ -1,5 +1,7 @@
 # LQA AI 识别服务
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+
 LQA 平台的 AI 识别后端，基于 Flask。平台通过 `AI_BASE_URL` 调用本服务完成本地化异常检测。
 
 ## 功能

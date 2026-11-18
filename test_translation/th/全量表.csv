@@ -1,10 +1,1 @@
 key,source_text,target_text,context,comment
-ui.mainmenu.play,开始游戏,เริ่มเกม,主菜单 - 开始新游戏,按钮文案要短
-ui.mainmenu.settings,设置,การตั้งค่า,主菜单 - 打开设置面板,
-ui.mainmenu.quit,退出,ออก,主菜单 - 退出游戏,
-ui.mainmenu.continue,继续游戏,เล่นต่อ,主菜单 - 从上次存档继续,
-ui.mainmenu.load,读取存档,โหลดข้อมูลบันทึก,主菜单 - 打开存档列表,
-ui.settings.language,语言,ภาษา,设置 - 语言切换项,
-ui.settings.fullscreen,全屏模式,โหมดเต็มหน้าจอ,设置 - 全屏开关,
-shop.buy.confirm,确认以 {price} 金币购买 {item}？,ยืนยันซื้อ {item} ในราคา {price} เหรียญทองหรือไม่?,购买确认弹窗,{price}、{item} 必须保留
-social.friend.add,添加好友,เพิ่มเพื่อน,社交面板 - 添加好友按钮,

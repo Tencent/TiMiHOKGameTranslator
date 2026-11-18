@@ -1,0 +1,360 @@
+meta: {}
+entries:
+- key: Guild_Construct_Building_Info_Text
+  source_text: '[ex]{1} <color=#ffb900>Lv{0}</color>
+
+    升级消耗：{2}
+
+    维护消耗：{3}'
+  target_text: '[ex] {1} <color=#ffb900>Lv {0}</color>
+
+    Thăng cấp tiêu hao: {2}
+
+    Duy trì tiêu hao: {3}'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8183812
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>yadianna皮肤[ex]未命名</color><color=#01d1f8ff>12</color>小时，如果已拥有该皮肤，使用后可获得1钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Yadina
+    [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>12</color> giờ, nếu đã có trang
+    phục này thì sẽ được tặng 1 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8135121
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>萨尼皮肤[ex]未命名</color><color=#01d1f8ff>1</color>天，如果已拥有该皮肤，使用后可获得5钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Thane
+    [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>1</color> ngày, nếu đã có trang
+    phục này thì sẽ được tặng 5 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 22.技能效果组合_技能效果组合_效果描述@70500417
+  source_text: '[ex]变身飘字buff for 太古巨猿'
+  target_text: '[Ex] Bùa biến hình Yornn lơ lửng - Cự thần cổ đại'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 22.技能效果组合_技能效果组合_效果描述@913341
+  source_text: '[ex]德鲁伊战甲-血统 v2(新文案)'
+  target_text: '[ex] Giáp Gaia - Sắc máu 2 (thông số mới)'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: hero_desc_duplicate_01_day2
+  source_text: 这是一位勇敢的战士，守护着家园的和平。
+  target_text: Đây là một chiến binh dũng cảm, bảo vệ sự bình yên của quê hương.
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820001_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>白起皮肤[ex]未命名</color><color=#01d1f8ff>3</color>天，如果已拥有该皮肤，使用后可获得15钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Bạch
+    khởi [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>3</color> ngày, nếu đã có
+    trang phục này thì sẽ được tặng 15 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820002_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>典韦皮肤[ex]未命名</color><color=#01d1f8ff>7</color>天，如果已拥有该皮肤，使用后可获得35钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Diceweaver
+    [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>7</color> ngày, nếu đã có trang
+    phục này thì sẽ được tặng 35 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820003_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>妲己皮肤[ex]未命名</color><color=#01d1f8ff>1</color>天，如果已拥有该皮肤，使用后可获得5钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Da
+    Ji [ex]Chưa đặt tên</color> trong <color=#01d1f8ff>1</color> ngày, nếu đã có trang
+    phục này thì sẽ được tặng 5 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820004_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>嬴政皮肤[ex]未命名</color><color=#01d1f8ff>12</color>小时，如果已拥有该皮肤，使用后可获得1钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Ying
+    Zheng [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>12</color> giờ, nếu đã
+    có trang phục này thì sẽ được tặng 1 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820005_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>孙尚香皮肤[ex]未命名</color><color=#01d1f8ff>3</color>天，如果已拥有该皮肤，使用后可获得15钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Song
+    Hằng [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>3</color> ngày, nếu đã có
+    trang phục này thì sẽ được tặng 15 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@820006_day2
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>公孙离皮肤[ex]未命名</color><color=#01d1f8ff>7</color>天，如果已拥有该皮肤，使用后可获得35钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Quillen
+    [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>7</color> ngày, nếu đã có trang
+    phục này thì sẽ được tặng 35 Ruby sau khi dùng'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 22.技能效果组合_技能效果组合_效果描述@980001_day2
+  source_text: '[ex]闪现技能冷却时间减少 2 秒'
+  target_text: '[ex] Giảm 2 giây hồi chiêu tốc biến'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 22.技能效果组合_技能效果组合_效果描述@980002_day2
+  source_text: '[ex]生命值低于 30% 时增加 20% 伤害'
+  target_text: '[Ex] Khi lượng máu thấp hơn 30% tăng 20% sát thương gây ra'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 22.技能效果组合_技能效果组合_效果描述@980003_day2
+  source_text: '[ex]普攻命中后恢复 5% 生命值'
+  target_text: '[ex] Đánh thường trúng đích hồi phục 5% máu'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: activity_banner_title_day2_01
+  source_text: <color=#ff6b6b>限时活动</color>：登录即送稀有英雄碎片！
+  target_text: '<color=#ff6b6b>Sự kiện hữu hạn</color>: Đăng nhập nhận miễn phí mảnh
+    tướng hiếm!'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: activity_banner_title_day2_02
+  source_text: <color=#4ecdc4>新赛季开启</color>：赢取专属段位奖励
+  target_text: '<color=#4ecdc4>Mùa mới bắt đầu</color>: Trận đầu thắng nhận thưởng
+    hạng độc quyền'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: shop_tooltip_rare_item_day2
+  source_text: 稀有道具：仅限<color=#ffb900>VIP 玩家</color>购买
+  target_text: 'Vật phẩm hiếm: Chỉ <color=#ffb900>TVIP</color> được mua'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: daily_quest_desc_day2_01
+  source_text: 完成 3 场<color=#75d6fb>排位赛</color>可获得 100 钻石
+  target_text: Hoàn thành 3 trận <color=#75d6fb>Đấu hạng</color> để nhận 100 Ruby
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: daily_quest_desc_day2_02
+  source_text: 连续登录 7 天即可解锁限定头像框
+  target_text: Đăng nhập liên tục 7 ngày để mở khóa viền giới hạn
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_001
+  source_text: 全服活动开启：参与跨服挑战赛瓜分 100,000 钻石
+  target_text: 'Sự kiện mở: Tham gia Đấu hạng Liên máy chủ để chia sẻ 100.000 Ruby'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_002
+  source_text: <color=#ff6b6b>限时折扣</color>：皮肤碎片 立减 80%
+  target_text: '<color=#ff6b6b>Ưu đãi hữu hạn</color>: Mảnh trang phục giảm trực tiếp
+    80%'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_003
+  source_text: 成就「百战百胜」已达成，奖励 100 钻石
+  target_text: Thành tựu "Trăm trận trăm thắng" đã hoàn thành, thưởng 100 Ruby
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_004
+  source_text: 英雄「Lauriel」的 三 技能数值已调整
+  target_text: Các số liệu chiêu 3 của tướng Lauriel đã được điều chỉnh
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_005
+  source_text: 兽族 阵营新英雄「Toro」现已登场
+  target_text: Tướng mới phe Thú tộc "Toro" đã ra mắt
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_006
+  source_text: 欢迎来到训练模式，首次体验可获得丰厚奖励！
+  target_text: Chào mừng bạn đến với chế độ huấn luyện, lần đầu tham gia sẽ nhận được
+    phần thưởng cực kỳ hấp dẫn!
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_007
+  source_text: 完成 3 场匹配赛即可解锁专属头像框
+  target_text: Hoàn thành 3 trận ghép đấu để mở khóa viền độc quyền
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_008
+  source_text: 巅峰赛段位重置通知：王者 以上玩家将下降 3 小段
+  target_text: 'Thông báo điều chỉnh hạng đấu đỉnh cao: Người chơi có hạng cao hơn
+    Vương Giả sẽ giảm 3 bậc dưới'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_009
+  source_text: 赛季奖励倒计时 12 小时，别错过你的段位奖励
+  target_text: Còn 12 giờ để nhận thưởng mùa, đừng bỏ lỡ phần thưởng hạng của bạn
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_010
+  source_text: 新称号「无畏战士」已解锁，查看你的个人主页
+  target_text: Đã mở khóa danh hiệu mới «Chiến binh bất khuất», hãy xem trang cá nhân
+    của bạn
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_011
+  source_text: 本周推荐英雄：Lauriel，胜率提升 <color=#4ecdc4>15%</color>
+  target_text: 'Tướng đề cử tuần này: Lauriel, tỷ lệ thắng tăng <color=#4ecdc4>15%</color>'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_012
+  source_text: 你的队伍在娱乐模式中以 3:1 的比分获胜
+  target_text: Đội của bạn thắng với tỷ số 3-1 trong chế độ giải trí
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_013
+  source_text: '[ex]新功能提示：战令玩法 已向 Lv10 以上玩家开放'
+  target_text: '[ex] Tính năng mới: Lối chơi Chiến lệnh đã mở cho người chơi cấp 10
+    trở lên'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_014
+  source_text: 赛季 S14 已结束，查看你的最终排名
+  target_text: Mùa S14 đã kết thúc, xem thứ hạng cuối cùng của bạn
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_015
+  source_text: 你的Zuka已升级至 Lv10，解锁新技能：闪电链
+  target_text: 'Zuka của bạn đã thăng cấp lên Lv10 và mở khóa chiêu mới: Chùm sét'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_016
+  source_text: 金币 库存不足，请前往商店补充
+  target_text: Chưa đủ Vàng, hãy đến Shop nạp thêm
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_017
+  source_text: 跨服匹配开启，预计等待时间 30 秒
+  target_text: Ghép đấu khác máy chủ mở, thời gian chờ dự kiến 30 giây
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_018
+  source_text: 战令等级 5，再升 3 级即可领取专属头像
+  target_text: Cấp chiến lệnh đạt cấp 5, tăng tiếp 3 cấp sẽ nhận được ảnh độc quyền
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_019
+  source_text: 每日任务「登录游戏」完成，奖励：传说皮肤体验卡
+  target_text: 'Hoàn thành nhiệm vụ hàng ngày "Đăng nhập", thưởng: Gói thẻ thử trang
+    phục huyền thoại'
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: seed_20261009_020
+  source_text: 击杀 远古巨龙 可获得 英雄碎片 x5
+  target_text: Hạ Rồng cổ đại sẽ nhận được 5 Mảnh tướng
+  metadata:
+    struct_name: VietnameseIncrement
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8175147
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>夸克皮肤[ex]未命名</color><color=#01d1f8ff>7</color>天，如果已拥有该皮肤，使用后可获得35钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Grakk[ex]Chưa
+    đặt tên</color> trong <color=#01d1f8ff>7</color> ngày, nếu đã có trang phục này
+    thì sẽ được tặng 35 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@856161
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>[测试]Phoebe皮肤[ex]未命名</color><color=#01d1f8ff>1</color>天，如果已拥有该皮肤，使用后可获得5钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>[Test]
+    Phoebe [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>1</color> ngày, nếu đã
+    có trang phục này thì sẽ được tặng 5 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8145812
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>[ex]李靖皮肤[ex]未命名</color><color=#01d1f8ff>12</color>小时，如果已拥有该皮肤，使用后可获得1钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>[ex]
+    Li Jing [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>12</color> giờ, nếu đã
+    có trang phục này thì sẽ được tặng 1 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@855391
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>[测试]Saturn皮肤[ex]未命名</color><color=#01d1f8ff>1</color>天，如果已拥有该皮肤，使用后可获得5钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>[Test]
+    Saturn [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>1</color> ngày, nếu đã
+    có trang phục này thì sẽ được tặng 5 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@81271212
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>阿兹卡皮肤[ex]未命名</color><color=#01d1f8ff>12</color>小时，如果已拥有该皮肤，使用后可获得1钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Azzen''Ka[ex]Chưa
+    đặt tên</color> trong <color=#01d1f8ff>12</color> giờ, nếu đã có trang phục này
+    thì sẽ được tặng 1 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8503157
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>祖卡皮肤[ex]未命名</color><color=#01d1f8ff>7</color>天，如果已拥有该皮肤，使用后可获得35钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Zuka[ex]Chưa
+    đặt tên</color> trong <color=#01d1f8ff>7</color> ngày, nếu đã có trang phục này
+    thì sẽ được tặng 35 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: 41.道具信息表_Syndra_道具信息_描述@8141211
+  source_text: 体验卡：使用后可免费使用<color=#75d6fb>萝尔皮肤[ex]未命名</color><color=#01d1f8ff>1</color>天，如果已拥有该皮肤，使用后可获得5钻石
+  target_text: 'Thẻ thử: Sau khi dùng có thể miễn phí dùng trang phục <color=#75d6fb>Lauriel
+    [ex] Chưa đặt tên</color> trong <color=#01d1f8ff>1</color> ngày, nếu đã có trang
+    phục này thì sẽ được tặng 5 Ruby sau khi dùng'
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: hero_desc_duplicate_02_day2
+  source_text: 这是一位勇敢的战士，守护着家园的和平。
+  target_text: Đây là một chiến binh dũng cảm, bảo vệ sự bình yên của quê hương.
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: hero_desc_duplicate_03_day2
+  source_text: 这是一位勇敢的战士，守护着家园的和平。
+  target_text: Đây là một chiến binh dũng cảm, bảo vệ sự bình yên của quê hương.
+  metadata:
+    struct_name: LocalizationEntry
+    struct_version: '1'
+- key: seed_20261009_021
+  source_text: 皮肤碎片 库存不足，请前往商店补充
+  target_text: Không đủ mảnh trang phục, hãy đến shop để bổ sung
+- key: seed_20261009_022
+  source_text: 好友 Carol 向你发送了组队邀请，一起来 匹配赛 吧！
+  target_text: Bạn bè Carol gửi lời mời tổ đội, cùng nhau đấu hạng nhé!
+- key: seed_20261009_023
+  source_text: 击杀 深渊魔王 可获得 经验卡 x3
+  target_text: Hạ Abyssal Emperor được nhận 3 Thẻ EXP
+- key: seed_20261009_024
+  source_text: 亡灵 阵营新英雄「Yorn」现已登场
+  target_text: Tướng mới phe Tử sĩ - Yorn đã xuất hiện
+- key: seed_20261009_025
+  source_text: 你的队伍在排位赛中以 3:1 的比分获胜
+  target_text: Đội của bạn đã thắng trong đấu hạng với tỷ số 3 - 1.
+- key: seed_20261009_026
+  source_text: 跨服匹配开启，预计等待时间 120 秒
+  target_text: Ghép đấu khác máy chủ mở, thời gian chờ dự kiến 120 giây

@@ -12,7 +12,7 @@
 > ### ✅ 混元 MT3 已适配
 > 
 > 本工程的翻译链路已适配 **腾讯混元翻译模型 Hy-MT3（混元 MT3）**。
-> 模型仓库：**<https://git.woa.com/jasonzli/Hy-MT3>**
+> 模型仓库：**<https://github.com/Tencent-Hunyuan/Hy-MT3>**
 
 ---
 
@@ -164,4 +164,4 @@ cd LQA_WMP && cp .env.example .env && docker compose up -d
 
 ## 致谢
 
-- [腾讯混元 Hy-MT3](https://git.woa.com/jasonzli/Hy-MT3)：提供翻译模型能力
+- [腾讯混元 Hy-MT3](https://github.com/Tencent-Hunyuan/Hy-MT3)：提供翻译模型能力

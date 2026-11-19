@@ -1,5 +1,5 @@
 """
-提单 + 回归 全流程测试（平台内记录模式 & Bugzilla 模拟服务）
+提单 + 回归 全流程测试 (平台内记录模式 & Bugzilla 模拟服务)
     python scripts/test_bug_flow.py
 """
 import datetime
@@ -67,7 +67,7 @@ def run_flow(name, tracker_cfg, expect_tracker):
     print(f'\n==== {name}')
     project, user, job, regress_job, data, image, img_abs, img_url = make_fixture(tracker_cfg)
 
-    # 1. AI 识别后自动提单（与 AiImageSignTask.create_bug 同一路径）
+    # 1. AI 识别后自动提单 (与 AiImageSignTask.create_bug 同一路径)
     err, ctx = bug_svr.prepare_create_bug_task_ctx_by_ai_sign(image.id)
     ok(not err and ctx['title'].startswith('【EN】【LQA】') and '漏译' in ctx['title'] and '漏key' in ctx['title']
        and 'KEY_HELLO' in ctx['description'] and ctx['reporter'] == user.name, f'生成提单内容: {ctx.get("title")}')
@@ -91,7 +91,7 @@ def run_flow(name, tracker_cfg, expect_tracker):
         {'image_id': new_img.id, 'bug_ids': [bug.id]}, None, logger).run()
     ok(code == 0 and stats and stats[0][0] == 'reopen' and stats[0][3] == 'suc', f'回归不通过 -> 重新打开 {stats}')
 
-    # 3. 回归：新截图已无问题 -> 关闭
+    # 3. 回归: 新截图已无问题 -> 关闭
     Bug.update_db(bug.id, {'regress_status': BugRegressStatusEnum.RUNNING})
     clean_img = Image.objects.create(project=project, job_id=regress_job.id, data_id=data.id, language=2,
                                      file_name=image.file_name, file_path=img_url, ai_mark_img_path=img_url,
@@ -116,7 +116,7 @@ def main():
     server = ThreadingHTTPServer(('127.0.0.1', 0), MockHandler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     base = f'http://127.0.0.1:{server.server_port}'
-    run_flow('Bugzilla（模拟服务）', {'tracker_type': 'bugzilla', 'base_url': base, 'api_key': 'bz-key',
+    run_flow('Bugzilla (模拟服务)', {'tracker_type': 'bugzilla', 'base_url': base, 'api_key': 'bz-key',
                                     'product': 'Game', 'component': 'UI'}, 'bugzilla')
 
     print('\n==== 缺陷系统不可用')

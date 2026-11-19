@@ -32,7 +32,7 @@ def get_tracker(project_id: int, config: Optional[dict] = None) -> BugTracker:
     """
     获取项目当前配置的缺陷系统客户端
     :param project_id: 项目ID
-    :param config: 不传则读取项目配置 ProjectConfigBugTracker（用于“测试连接”时传入未保存的配置）
+    :param config: 不传则读取项目配置 ProjectConfigBugTracker (用于 “测试连接” 时传入未保存的配置)
     配置不完整时抛出 BugTrackerError
     """
     if config is None:

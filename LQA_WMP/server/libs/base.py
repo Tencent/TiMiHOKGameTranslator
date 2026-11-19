@@ -44,8 +44,8 @@ class BaseModel(models.Model):
     @classmethod
     def query_batch_by_pks(cls, pks, fields=None, step=500, reverse=False):
         """
-        当pks数量比较多的场景
-        reverse False升序 True降序
+        当 pks 数量比较多的场景
+        reverse False 升序 True 降序
         """
         if not fields:
             fields = []
@@ -74,7 +74,7 @@ class BaseModel(models.Model):
             num = cls.objects.filter(pk__in=pks).update(**mapping)
             ret = []
             if cache_update:
-                # 在事务内应该更新缓存，而不是删除缓存
+                # 在事务内应该更新缓存, 而不是删除缓存
                 if callable(cache_update):
                     cache_func_name = cache_update.__name__
                     ret = cache_update(pks)
@@ -95,9 +95,9 @@ class BaseModel(models.Model):
     @classmethod
     def update_db(cls, pks, mapping=None, auto_updated_at=True):
         """
-        cls.objects.filter(pk__in=pks).update(**mapping) 方法是直接转为 SQL 语句的。这是一种用于直接更新的批量操作。
-        它并不会调用模型的 save() 方法，或发射 pre_save 或 post_save 信号（调用 save() 会触发信号），或使用 auto_now 字段选项。
-        若想保存 QuerySet 中的每项，并确保调用了每个实例的 save() 方法，你并不需要任何特殊的函数来处理此问题。迭代它们，
+        cls.objects.filter(pk__in=pks).update(**mapping) 方法是直接转为 SQL 语句的, 这是一种用于直接更新的批量操作,
+        它并不会调用模型的 save() 方法, 或发射 pre_save 或 post_save 信号 (调用 save() 会触发信号), 或使用 auto_now 字段选项
+        若想保存 QuerySet 中的每项, 并确保调用了每个实例的 save() 方法, 你并不需要任何特殊的函数来处理此问题, 迭代它们,
         并调用它们的 save() 方法
         所以再这里 统一更新 updated_at
         """
@@ -145,11 +145,11 @@ class PageView(View):
             if val is not None:
                 if field.endswith('contains') and len(val) == 0:
                     continue
-                if field in self.Pk_Conditions:     # 防止和本身的pk查询冲突
+                if field in self.Pk_Conditions:     # 防止和本身的 pk 查询冲突
                     has_pk_condition = True
                     if 'pk_lt' in params:
                         del params['pk_lt']
-                if field == 'cur_id' and not has_pk_condition:  # 防止和本身的pk查询冲突
+                if field == 'cur_id' and not has_pk_condition:  # 防止和本身的 pk 查询冲突
                     params['pk__lt'] = vmi.cur_id
                 elif field.endswith(self.BEGIN_AT):
                     params[f'{field[:len(field) - len(self.BEGIN_AT)]}_at__gte'] = val
@@ -191,7 +191,7 @@ class PageView(View):
 
     @classmethod
     def page_by_where(cls, param: dict):
-        return False  # 强制使用page分页
+        return False  # 强制使用 page 分页
         if param is None:
             return False
         return True if any([k_ in param for k_ in cls.Pk_Conditions]) else False

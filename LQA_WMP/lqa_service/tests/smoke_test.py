@@ -1,10 +1,33 @@
 # -*- coding: utf-8 -*-
-"""本地冒烟测试：用 tests/test/ 下的样例批量调用 lqa_check 接口。
+"""
+# @file: smoke_test.py
+# @desc: 本地冒烟测试: 用 tests/test/ 下的样例批量调用 lqa_check 接口
+
+读取 tests/test/ 目录下各样例子目录 (由 `tests/gen_samples.py` 生成,
+每个子目录含 screenShot.png + v3_result.json), 依次携带
+project-method 请求头调用 /image/lqa_check/ 接口, 统计每个样例的:
+    - 请求是否成功 (HTTP 状态码、success 字段)
+    - 接口响应耗时
+    - 是否判定为 overframe (存在异常)
+    - 检出的异常类型数量及前 5 个类型 id (check_detail)
+    - 是否返回了标记图 (mark_img)
+
+偏向服务级健康检查 (service smoke test): 只验证接口能否正常跑通、
+不报错、不超时, 不对具体检测结果的正确性做断言, 若样例目录
+不存在或为空, 会提示先运行 gen_samples.py 生成样例
 
 用法:
     python tests/smoke_test.py [host:port] [project]
+
+参数说明:
+    host:port   LQA 服务地址, 默认 127.0.0.1:8086
+    project     project-method 请求头中的项目标识, 默认 lqa
+                (实际请求头为 "<project>_lqa")
+
 例:
     python tests/smoke_test.py 127.0.0.1:8086 lqa
+
+退出码: 0 表示全部样例通过, 1 表示存在失败样例或样例目录缺失/为空
 """
 import os
 import sys
@@ -65,7 +88,7 @@ def main():
 
     if not os.path.isdir(CASE_DIR):
         print('未找到样例目录: %s' % CASE_DIR)
-        print('\n真实游戏截图涉及版权未随仓库发布，请先生成合成样例:')
+        print('\n真实游戏截图涉及版权未随仓库发布, 请先生成合成样例:')
         print('    python tests/gen_samples.py')
         return 1
 

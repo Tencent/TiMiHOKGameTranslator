@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 # @file: lqa_supervised.py
-# @time: 2022/7/29 18:10
-# @desc: lqa本地化文本异常检测——半监督模块
+# @desc: LQA 本地化文本异常检测——半监督处理模块, 提供 Supervised 类实现以下能力:
+#        - get_supervised_data/get_over_frame_supervised_data: 解析人工审核的监督数据 (supervised),
+#                     按漏译/超框 (文本超文本框、文本超图像框)/漏key/文本框重叠/错译/
+#                     non_problem/非标准框等类型分类提取
+#        - judge_location_change: 对比当前图像与历史图像的差异区域, 过滤出发生变化的检测区域,
+#                     未变化区域可直接复用历史检测结果
+#        - extract_history_result_by_other_type/extract_history_result_by_over_frame_type/
+#          extract_history_result: 根据历史检测结果 (history_result), 在两次检测图像的相同 (未变化)
+#                     区域上保留历史异常标记, 并在结果图上绘制对应的标注框
+#        - preprocessing: 结合历史图像和历史检测结果, 预处理待检测的文本框/图像框列表,
+#                     过滤掉未发生变化的区域, 减少重复检测
+#        - preprocessing_errs: 处理预处理阶段直接产生的异常 (如脏数据/非标准框等),
+#                     直接绘制标注并写入检测结果详情, 无需进入后续常规检测流程
 """
 import cv2
 import numpy as np
@@ -13,18 +24,18 @@ from common.tools import img_draw_rect
 
 
 class Supervised:
-    """监督处理（历史测试数据）"""
+    """监督处理 (历史测试数据)"""
 
     @staticmethod
     def get_supervised_data(data):
         """ 获取各类监督数据
-                :param data: dict, 监督数据
-                :return: 各类监督数据列表
-                """
+        :param data: dict, 监督数据
+        :return: 各类监督数据列表
+        """
         no_trans_list = []  # 漏译
         over_frame_text_text_list = []  # 文本超文本框
         over_frame_text_image_list = []  # 文本超图像框
-        no_key_list = []  # 漏key
+        no_key_list = []  # 漏 key
         overlap_list = []  # 文本框重叠
         error_trans_list = []  # 错译
         non_problem_list = []  # non_problem
@@ -97,13 +108,13 @@ class Supervised:
     @staticmethod
     def extract_history_result_by_other_type(type_id, diff_img, sub_img, history_result, check_detail):
         """ 提取历史非超框类型数据
-        :param type_id:  int, 异常类型id
-        :param diff_img:  ndarray, 结果绘制图
+        :param type_id: int, 异常类型 id
+        :param diff_img: ndarray, 结果绘制图
         :param sub_img: ndarray, 两次测试图像的差图
         :param history_result: dict, 历史检测结果
         :param check_detail: dict, 检测结果详细信息
         :return: diff_img, 结果绘制图
-                check_detail, 检测结果详细信息
+                 check_detail, 检测结果详细信息
         """
         draw_style = None
         # 非超框异常
@@ -113,7 +124,7 @@ class Supervised:
                 location_list = [item[1]]
                 judge_res = Supervised.judge_location_change(sub_img, location_list,
                                                              need_coordinate_trans=False)
-                if len(judge_res) <= 0:  # 对比历史检测结果的相同区域，结果进行保留
+                if len(judge_res) <= 0:  # 对比历史检测结果的相同区域, 结果进行保留
                     check_detail = LqaAbnormal.update_check_type_detail(check_detail, int(type_id), item)
                     if int(type_id) == LqaCheckType.NO_TRANS.value:
                         draw_style = DrawStyle.NO_TRANS.value
@@ -128,15 +139,15 @@ class Supervised:
     @staticmethod
     def extract_history_result_by_over_frame_type(type_id, diff_img, sub_img, history_result, check_detail):
         """ 提取历史超框数据
-        :param type_id:  int, 异常类型id
-        :param diff_img:  ndarray, 结果绘制图
+        :param type_id: int, 异常类型 id
+        :param diff_img: ndarray, 结果绘制图
         :param sub_img: ndarray, 两次测试图像的差图
         :param history_result: dict, 历史检测结果
         :param check_detail: dict, 检测结果详细信息
         :return: diff_img, 结果绘制图
-                check_detail, 检测结果详细信息
+                 check_detail, 检测结果详细信息
         """
-        # 超框异常:分为文本超文本框，文本超图像框
+        # 超框异常: 分为文本超文本框, 文本超图像框
         frame_data = history_result[type_id]
         for sub_type_id in frame_data:
             for item in frame_data[sub_type_id]:
@@ -146,7 +157,7 @@ class Supervised:
                     location_list.append([item[2]])
                 judge_res = Supervised.judge_location_change(sub_img, location_list,
                                                              need_coordinate_trans=False)
-                if len(judge_res) <= 0:  # 对比历史检测结果的相同区域，结果进行保留
+                if len(judge_res) <= 0:  # 对比历史检测结果的相同区域, 结果进行保留
                     check_detail = LqaAbnormal.update_check_type_detail(check_detail,
                                                                         int(type_id),
                                                                         item,
@@ -158,13 +169,13 @@ class Supervised:
 
     @staticmethod
     def extract_history_result(diff_img, sub_img, history_result, check_detail):
-        """ 根据历史检测结果，提取并保留2次检测图像相同区域的结果
-        :param diff_img:  ndarray, 结果绘制图
+        """ 根据历史检测结果, 提取并保留 2 次检测图像相同区域的结果
+        :param diff_img: ndarray, 结果绘制图
         :param sub_img: ndarray, 两次测试图像的差图
         :param history_result: dict, 历史检测结果
         :param check_detail: dict, 检测结果详细信息
         :return: diff_img, 结果绘制图
-                check_detail, 检测结果详细信息
+                 check_detail, 检测结果详细信息
         """
         if history_result:
             # 逐类处理结果数据
@@ -187,11 +198,11 @@ class Supervised:
     @staticmethod
     def preprocessing(img, diff_img, rect_locations, history_img, history_result):
         """ 半监督数据预处理
-        :param img:  ndarray, 待检测图像
+        :param img: ndarray, 待检测图像
         :param diff_img: ndarray, 结果绘制图
         :param rect_locations: list, 待检测图像文本、图像框信息
         :param history_img: ndarray, 历史检测图像
-        :param history_result:  dict, 历史检测结果
+        :param history_result: dict, 历史检测结果
         :return: text_location_list, 预处理后需要检测的文本框信息
                  image_location_list, 预处理后需要检测的图像框信息
                  diff_img, 结果绘制图
@@ -212,12 +223,12 @@ class Supervised:
 
     @staticmethod
     def preprocessing_errs(lqa_img, rect_locations, gt_text_info, check_detail):
-        """ 预处理的异常————只需要直接绘制结果和返回错误
+        """ 预处理的异常 ———— 只需要直接绘制结果和返回错误
         :param lqa_img: ndarray, 结果绘制图
         :param rect_locations: list, 待检测图像文本、图像框信息
         :param gt_text_info: dict, 处理的上报文本信息
         :param check_detail:  dict, 检测结果
-        :return: lqa_img, 预处理后的lqa_img
+        :return: lqa_img, 预处理后的 lqa_img
                  check_detail, 预处理后的检测结果详细信息
         """
         gt_text_locations = gt_text_info['gt_text_locations']

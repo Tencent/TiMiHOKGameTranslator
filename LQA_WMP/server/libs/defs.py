@@ -89,7 +89,7 @@ class JobResTypeEnum(models.TextChoices):
     OTHER = 'other'
 
 class BugPriorityEnum(models.IntegerChoices):
-    """平台内的优先级，提交到缺陷系统时由适配器映射为对应系统的取值"""
+    """平台内的优先级, 提交到缺陷系统时由适配器映射为对应系统的取值"""
     EMPTY = 0, '空'
     URGENT = 1, '紧急'
     HIGH = 2, '高'
@@ -99,7 +99,7 @@ class BugPriorityEnum(models.IntegerChoices):
 
 
 class BugSeverityEnum(models.IntegerChoices):
-    """平台内的严重程度，提交到缺陷系统时由适配器映射为对应系统的取值"""
+    """平台内的严重程度, 提交到缺陷系统时由适配器映射为对应系统的取值"""
     EMPTY = 0, '空'
     FATAL = 1, '致命'
     SERIOUS = 2, '严重'
@@ -157,7 +157,5 @@ class ApiErrorEnum(models.IntegerChoices):
 LO_TIME_DELTA = datetime.timedelta(hours=8)
 LO_ZONE = datetime.timezone(LO_TIME_DELTA)
 
-# 系统模板项目id：存放系统级缺陷类型、语言配置，新建项目时以此为模板复制
+# 系统模板项目id: 存放系统级缺陷类型、语言配置, 新建项目时以此为模板复制
 QCC_PROJECT_ID = 0
-
-

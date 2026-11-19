@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
-"""云厂商 OCR 适配：腾讯云 / 百度 / 阿里云读光 / Azure
-
-这些服务均返回文本 + 边界框，满足 LQA 的超框检测要求。
-均为按量计费，批量识别时注意成本与 QPS 限制。
+"""
+# @file: ocr_provider/cloud.py
+# @desc: 云厂商 OCR 适配模块, 提供以下 provider 实现:
+#   - TencentCloudOcr (name='tencentcloud')
+#       腾讯云通用印刷体识别 GeneralBasicOCR
+#       依赖: pip install tencentcloud-sdk-python-ocr
+#       相关配置: OCR_SECRET_ID / OCR_SECRET_KEY / OCR_REGION (默认 ap-guangzhou)
+#   - BaiduOcr (name='baidu')
+#       百度智能云通用文字识别 (含位置信息)
+#       相关配置: OCR_API_KEY / OCR_SECRET_KEY
+#       内部通过 OAuth2 client_credentials 方式获取 access_token 并缓存 (类变量 _token)
+#   - AzureOcr (name='azure')
+#       Azure AI Vision Read API
+#       相关配置: OCR_HOST (服务 endpoint) / OCR_API_KEY
+#
+# 这些服务均返回文本内容及对应边界框 (area: [x1,y1,x2,y2]), 满足 LQA 超框检测对
+# 文本精确定位的要求, 均为按量计费的远程调用 (remote=True), 批量识别时需注意
+# 云厂商侧的成本与 QPS 限制, 避免触发限流或产生高额费用
 """
 import json
 import logging
@@ -34,7 +48,7 @@ class TencentCloudOcr(OcrProvider):
             from tencentcloud.ocr.v20181119 import ocr_client, models
         except ImportError as err:
             raise OcrError(
-                '未安装腾讯云 SDK，请执行: pip install tencentcloud-sdk-python-ocr'
+                '未安装腾讯云 SDK, 请执行: pip install tencentcloud-sdk-python-ocr'
             ) from err
 
         try:
@@ -64,7 +78,7 @@ class TencentCloudOcr(OcrProvider):
 
 
 class BaiduOcr(OcrProvider):
-    """百度智能云通用文字识别（含位置信息）
+    """百度智能云通用文字识别 (含位置信息)
 
     配置: OCR_API_KEY / OCR_SECRET_KEY
     """

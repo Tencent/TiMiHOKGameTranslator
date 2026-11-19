@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 # @file: lqa_config.py
-# @time: 2022/6/26
-# @desc: lqa本地化支持测试类型相关配置
+# @desc: LQA 本地化检测相关配置, 定义以下枚举:
+#        - LqaCheckType: 检测问题类型 (漏译/超框/漏key/文本框重叠/错译/自定义non_problem/非标准框)
+#        - LqaCheckSubType: 超框问题的细分子类型 (文本超文本框/文本超图像框)
+#        - DrawStyle: 各类检测结果在图像上标注时使用的颜色 (RGB) 及线宽样式
+#        - Language: 支持检测的语言类型 (简体中文/繁体中文/英文/日文/泰文/越南文)
 """
 from enum import Enum
 
@@ -13,7 +16,7 @@ class LqaCheckType(Enum):
     NO_KEY = 3  # 漏key
     OVERLAP = 4  # 文本框重叠
     ERROR_TRANS = 5  # 错译
-    NON_PROBLEM = 6  # non_problem自定义
+    NON_PROBLEM = 6  # non_problem 自定义
     NON_RECTANGLE = 7  # 非标准框
 
 

@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 # @file: image_processing.py
-# @time: 2022/7/27
-# @author:jinnyzhao
-# @desc: 数据处理相关接口
+# @desc: 图像前景区域提取相关数据处理模块, 提供以下枚举和 ImageProcessing 类:
+#        - ZeroType: 坐标原点类型 (左上角/左下角)
+#        - PositionType: 位置表示类型 (像素坐标/比例坐标)
+#        - ImageProcessing.coordinate_trans: 根据指定的坐标原点 (zero_type) 和表示方式 (position_type),
+#                     对矩形区域坐标 (x1,y1,x2,y2) 进行转换
+#        - ImageProcessing.get_extraction_rect: 根据 alpha 通道图像及阈值, 扫描计算出非透明
+#                     前景内容的最小外接矩形区域, 并处理边界坐标
+#        - ImageProcessing.single_image_extraction: 对单张四通道 (RGBA) 图像提取前景区域,
+#                     当图像整体透明度偏低时自适应调整阈值, 再按指定坐标原点/表示方式输出结果
+#        - ImageProcessing.image_extraction: 批量处理多张图像 (以图像名为 key 的字典),
+#                     逐一调用 single_image_extraction 提取前景区域并汇总返回
 """
 from enum import Enum
 import cv2
@@ -28,13 +36,13 @@ class ImageProcessing:
 
     @staticmethod
     def coordinate_trans(rect, h, w, zero_type=0, position_type=0):
-        """  坐标变换，根据zero_type和position_type转换坐标
-        :param rect: tuple或者list, 四维向量表示区域,左上角右下角双点定位 (x1, y1, x2, y2)
+        """  坐标变换, 根据 zero_type 和 position_type 转换坐标
+        :param rect: tuple 或者 list, 四维向量表示区域, 左上角右下角双点定位 (x1, y1, x2, y2)
         :param h: int, 图像高度
         :param w: int, 图像宽度
-        :param zero_type: int, 标记坐标原点方式, 默认0, 取值ZeroType
-        :param position_type: int, 标记位置表示方式, 默认0, 取值PositionType
-        :return: 转化后的坐标(x1, y1, x2, y2)
+        :param zero_type: int, 标记坐标原点方式, 默认 0, 取值 ZeroType
+        :param position_type: int, 标记位置表示方式, 默认 0, 取值 PositionType
+        :return: 转化后的坐标 (x1, y1, x2, y2)
         """
         if zero_type == ZeroType.LEFT_TOP.value:
             x1, y1, x2, y2 = rect
@@ -95,11 +103,11 @@ class ImageProcessing:
     @staticmethod
     def single_image_extraction(img_base64, zero_type=0, position_type=0, alpha_t=50):
         """ 单图像前景提取
-        :param img_base64: str, base64格式的图像数据
+        :param img_base64: str, base64 格式的图像数据
         :param zero_type: int, 标记坐标原点方式, 支持左下角和左上角原点
         :param position_type: int, 标记位置表示方式, 支持像素和小数比例表示
         :param alpha_t: int, alpha通道数据阈值
-        :return: {图像名：图像位置，...}
+        :return: {图像名: 图像位置，...}
         """
         rect_res = None
         if img_base64 is None:
@@ -107,7 +115,7 @@ class ImageProcessing:
         img = base64_to_mat(img_base64, alpha=True)
         if img.shape[2] != 4:
             return rect_res
-        # 提取alpha通道数据
+        # 提取 alpha 通道数据
         _, _, _, a = cv2.split(img)
         h, w = a.shape
         max_a = max([max(item) for item in a.tolist()])
@@ -123,12 +131,12 @@ class ImageProcessing:
 
     @staticmethod
     def image_extraction(img_base64, zero_type=0, position_type=0, alpha_t=50):
-        """ 提取图像前景的实际区域，支持多张图片批量处理(四通道图像)
-        :param img_base64: dict, 待处理的图像数据{图像名: base64图像数据, ...}
-        :param zero_type: int, 标记坐标原点方式, 默认0, 取值ZeroType
-        :param position_type: int, 标记位置表示方式, 默认0, 取值PositionType
-        :param alpha_t: int, alpha通道数据阈值
-        :return: 提取后的结果 {图像名：图像位置，...}
+        """ 提取图像前景的实际区域, 支持多张图片批量处理 (四通道图像)
+        :param img_base64: dict, 待处理的图像数据 {图像名: base64 图像数据, ...}
+        :param zero_type: int, 标记坐标原点方式, 默认 0, 取值 ZeroType
+        :param position_type: int, 标记位置表示方式, 默认0, 取值 PositionType
+        :param alpha_t: int, alpha 通道数据阈值
+        :return: 提取后的结果 {图像名: 图像位置, ...}
         """
         res = {
             "image_extraction": {}

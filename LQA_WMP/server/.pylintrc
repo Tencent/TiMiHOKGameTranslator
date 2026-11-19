@@ -1,15 +1,15 @@
 [MASTER]
-# Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
-# number of processors available to use.
+# 使用多进程加速 Pylint 检查, 设置为 0 时会自动检测可用的 CPU 核心数
 jobs=1
 
 
 [MESSAGES CONTROL]
 
-# Disable the message, report, category or checker with the given id(s).
+# 禁用指定 id 对应的消息/报告/分类或检查器 (此处设为 all, 即先禁用全部检查项,
+# 再通过下方 enable 按需开启部分检查)
 disable=all
 
-# Enable the message, report, category or checker with the given id(s).
+# 启用指定 id 对应的消息/报告/分类或检查器 (配合上方 disable=all, 仅开启以下列出的检查项)
 enable=c-extension-no-member,
        bad-indentation,
        bare-except,
@@ -36,22 +36,22 @@ enable=c-extension-no-member,
 
 [FORMAT]
 
-# Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
+# 期望的换行符格式, 例如 empty (不限制任何换行符)、LF 或 CRLF
 expected-line-ending-format=LF
 
-# Regexp for a line that is allowed to be longer than the limit.
+# 允许超出长度限制的行所匹配的正则表达式 (此处用于放行纯链接的注释行)
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$
 
-# Maximum number of characters on a single line.
+# 单行代码允许的最大字符数
 max-line-length=120
 
-# Maximum number of lines in a module.
+# 单个模块 (文件) 允许的最大行数
 max-module-lines=2000
 
 
 [EXCEPTIONS]
 
-# Exceptions that will emit a warning when being caught. Defaults to
-# "BaseException, Exception".
+# 捕获时会触发警告的过于宽泛的异常类型, 默认值为
+# "BaseException, Exception"
 overgeneral-exceptions=builtins.BaseException,
                        builtins.Exception

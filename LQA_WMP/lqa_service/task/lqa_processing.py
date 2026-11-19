@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 # @file: lqa_processing.py
-# @time: 2022/8/10 18:10
-# @desc: lqa本地化相关数据预处理接口
+# @desc: LQA 本地化检测相关数据预处理工具模块, 提供 LqaProcessing 类实现以下能力:
+#        - judge_rectangle/coordinate_trans: 判断四点坐标是否为标准矩形框, 并将左下角为原点的
+#                     坐标体系转换为图像坐标系 (x1,y1,x2,y2 或 四点坐标)
+#        - is_dirty_text/detect_gt_text_locations/detect_gt_image_locations: 提取标准文本框/
+#                     图像框位置信息，过滤尺寸异常、越界、空文本等脏数据，并标记非标准 (非矩形) 框
+#        - draw_gt_locations: 在图像上绘制标准文本框/图像框及非标准框的标注样式
+#        - detect_ocr_data/filter_text_data/get_join_ocr_result: 调用 OCR 识别图像文本,
+#                     并按标准文本框归属过滤、聚合 OCR 结果
+#        - overlap/rect_collision_detection: 矩形碰撞检测, 判断两个矩形是否存在重叠/碰撞关系
+#        - judge_overlap_with_text_i/merge_and_update_overlap/get_overlap_group_data/
+#          save_single_group_classify_res/classify_text_location_overlap: 对所有文本框两两判断
+#                     重叠关系并分组合并, 将文本框分类为独立文本框和重叠文本框组 (取最小外接矩形)
+#        - judge_ocr_location_extend/align_single_ocr_location/align_ocr_location: 根据 OCR
+#                     识别结果对文本框区域进行扩展判断和位置微调校准, 提升文本定位精度
+#        - shrink_image_box: 基于连通域分析, 将图像框收缩到实际前景内容的最小外接矩形
 """
 import math
 import cv2
@@ -14,7 +27,7 @@ from common.tools import img_draw_rect
 
 
 class LqaProcessing:
-    """lqa数据预处理类"""
+    """lqa 数据预处理类"""
 
     @staticmethod
     def judge_rectangle(location_dict):
@@ -37,11 +50,11 @@ class LqaProcessing:
 
     @staticmethod
     def coordinate_trans(location_dict, height, is_rectangle=True):
-        """坐标变换，提供的标准数据text和image的矩形框位置信息是以左下角为原点
+        """坐标变换, 提供的标准数据 text 和 image 的矩形框位置信息是以左下角为原点
         :param location_dict: dict, 位置信息
         :param height: int, 图像高度
-        :param is_rectangle: bool, 默认标准文本框， 返回思维向量，否则保持原4个点坐标
-        :return: 转化后的位置坐标(x1, y1, x2, y2)
+        :param is_rectangle: bool, 默认标准文本框, 返回思维向量, 否则保持原 4 个点坐标
+        :return: 转化后的位置坐标 (x1, y1, x2, y2)
         """
         if is_rectangle:
             x1 = int(location_dict["corners"][1]["x"])
@@ -91,11 +104,11 @@ class LqaProcessing:
 
     @staticmethod
     def detect_gt_text_locations(img, text_location_list, preprocessing=False):
-        """ 提取所有标准文本框的位置信息，进行坐标转换
+        """ 提取所有标准文本框的位置信息, 进行坐标转换
         :param img: ndarray, 图像
         :param text_location_list: list, 标准文本框信息
         :return: gt_text_info, dict, {'gt_text_locations': 文本框信息, 'dirty_text_ids': 脏文本框id,
-        'non_rectangle_ids': 非标框, preprocessing_err 预检测异常{index: [error类型id列表]}}
+        'non_rectangle_ids': 非标框, preprocessing_err 预检测异常 {index: [error类型id列表]}}
         """
         # 所有标准文本信息
         height, width = img.shape[:2]
@@ -127,16 +140,16 @@ class LqaProcessing:
 
     @staticmethod
     def detect_gt_image_locations(img, image_location_list):
-        """提取所有标准图像框的位置信息，进行坐标转换
+        """提取所有标准图像框的位置信息, 进行坐标转换
         :param img: ndarray, 图像
         :param image_location_list: list, 标准图像框信息
-        :return: gt_image_info, dict, {'gt_image_locations': 图像框信息, 'dirty_text_ids': 脏图像框id}
+        :return: gt_image_info, dict, {'gt_image_locations': 图像框信息, 'dirty_text_ids': 脏图像框 id}
         """
         height, width = img.shape[:2]
         gt_image_info = {'gt_image_locations': [], 'dirty_image_ids': []}
         image_list_temp = []
         for i in range(len(image_location_list)):
-            # image框
+            # image 框
             image_location_dict = image_location_list[i]
             if image_location_dict not in image_list_temp:
                 image_list_temp.append(image_location_dict)
@@ -156,7 +169,7 @@ class LqaProcessing:
         :param rect_img: ndarray, 图像
         :param gt_text_info: dict, 标准文本框信息
         :param gt_image_info: dict, 标准图像框信息
-        :return: 标记后的rect_img
+        :return: 标记后的 rect_img
         """
         gt_text_locations = gt_text_info['gt_text_locations']
         dirty_text_ids = gt_text_info['dirty_text_ids']
@@ -175,11 +188,11 @@ class LqaProcessing:
 
     @staticmethod
     def detect_ocr_data(img, gt_text_info, project=None):
-        """检测图像中所有ocr,同时过滤不属于标准框内的结果
+        """检测图像中所有 ocr, 同时过滤不属于标准框内的结果
         :param img: ndarray, 图像
         :param gt_text_info: dict, 标准文本框信息
         :param project: str, 指定调用项目
-        :return: all_ocr_dict, 全图OCR识别结果
+        :return: all_ocr_dict, 全图 OCR 识别结果
         """
         # 标准信息
         gt_text_locations = gt_text_info['gt_text_locations']
@@ -188,7 +201,7 @@ class LqaProcessing:
         # 所有检测文本信息
         all_ocr_dict = {}
         text_data = ocr(mat_to_base64(img), project=project)
-        if not text_data:  # OCR 未配置/不可用：返回空结果，由调用方跳过相关检测
+        if not text_data:  # OCR 未配置/不可用: 返回空结果, 由调用方跳过相关检测
             return all_ocr_dict
         for text_one in text_data:
             ocr_result = text_one["result"]
@@ -210,8 +223,8 @@ class LqaProcessing:
 
     @staticmethod
     def filter_text_data(gt_text_info, text_location_list):
-        """直接从检测文件中提取ocr相关信息， 不需要检测
-        :param gt_text_info: 预处理的标准数据，包括位置信息,过滤脏数据的索引
+        """直接从检测文件中提取 ocr 相关信息, 不需要检测
+        :param gt_text_info: 预处理的标准数据, 包括位置信息, 过滤脏数据的索引
         :param text_location_list: list, 半监督预处理后的文本信息
         :return: all_ocr_dict, 全图文本内容
         """
@@ -228,14 +241,14 @@ class LqaProcessing:
 
     @staticmethod
     def overlap(rect1, rect2, x_t=10, y_t=5):
-        """矩形碰撞检测, 有重叠交集为True
-        :param rect1: 矩形框1位置, x1,y1,x2,y2格式
-        :param rect2: 矩形框2位置, x1,y1,x2,y2格式
+        """矩形碰撞检测, 有重叠交集为 True
+        :param rect1: 矩形框1位置, x1,y1,x2,y2 格式
+        :param rect2: 矩形框2位置, x1,y1,x2,y2 格式
         :param x_t: int, 重叠区域 x方向阈值
         :param y_t: int, 重叠区域 y方向阈值
         :return: bool,是否重叠
-                 ratio, str: 和rect2的重叠比率
-                 (sub_x, sub_y): 和rect2的重叠比率
+                 ratio, str: 和 rect2 的重叠比率
+                 (sub_x, sub_y): 和 rect2 的重叠比率
         """
         # 重叠区域
         x_min = max(rect1[0], rect2[0])
@@ -255,15 +268,15 @@ class LqaProcessing:
 
     @staticmethod
     def judge_overlap_with_text_i(overlap_dict, text_i, text_location_list, dirty_text_ids):
-        """判断与text_i重叠的文本框, 保存在字典里 (只判断索引大于text_i, 减少重复计算)
+        """判断与 text_i 重叠的文本框, 保存在字典里 (只判断索引大于text_i, 减少重复计算)
         :param overlap_dict: dict, 保存的重叠关系结果
         :param text_i: int, 当前处理的文本框索引
         :param text_location_list: list, 文本位置信息
         :param dirty_text_ids: list, 脏文本框索引列表
-        :return:  更新的overlap_dict
+        :return: 更新的overlap_dict
         """
 
-        # 存储分类结果：分别标记独立文本框和重叠文本框位置、索引
+        # 存储分类结果: 分别标记独立文本框和重叠文本框位置、索引
         cnt = len(text_location_list)
         overlap_dict[text_i] = [text_i]
         for j in range(cnt):
@@ -276,10 +289,10 @@ class LqaProcessing:
 
     @staticmethod
     def merge_and_update_overlap(temp_overlap_list, i_overlaps):
-        """判断是否是一组重叠文本框, 合并更新分组id
+        """判断是否是一组重叠文本框, 合并更新分组 id
         :param temp_overlap_list: list, 存储分组结果
-        :param i_overlaps: list, 第i个文本框判断的结果
-        :return: 更新后的temp_overlap_list
+        :param i_overlaps: list, 第 i 个文本框判断的结果
+        :return: 更新后的 temp_overlap_list
         """
         in_others = False
         for k in i_overlaps:
@@ -317,7 +330,7 @@ class LqaProcessing:
         temp_overlap_list = []
         for i in range(cnt):
             if i not in overlap_dict:
-                temp_overlap_list.append([])  # 脏数据占位，保留索引
+                temp_overlap_list.append([])  # 脏数据占位, 保留索引
                 continue
             i_overlaps = overlap_dict[i]
             if len(temp_overlap_list) == 0:
@@ -336,7 +349,7 @@ class LqaProcessing:
     def save_single_group_classify_res(single_group_overlap, current_index, text_location_list,
                                        classify_text_location_res):
         """根据一组文本框分类结果, 结果格式化和保存
-        :param single_group_overlap: dict, 单组重叠文本框(保存的是对应文本框index)
+        :param single_group_overlap: dict, 单组重叠文本框 (保存的是对应文本框 index)
         :param current_index: int, 当前处理的文本索引
         :param text_location_list: list, 文本位置信息
         :param classify_text_location_res: dict, 分类结果
@@ -358,7 +371,7 @@ class LqaProcessing:
             classify_text_location_res['independent'].append((x_min_list[0], y_min_list[0], x_max_list[0],
                                                               y_max_list[0]))
             classify_text_location_res['independent_id'].append(current_index)
-        # 有重叠的文本框合并，最小外接矩形
+        # 有重叠的文本框合并, 最小外接矩形
         elif len(x_min_list) > 1:
             group_x1 = np.min(x_min_list)
             group_y1 = np.min(y_min_list)
@@ -374,7 +387,7 @@ class LqaProcessing:
         :param gt_text_info: dict, 提取的标准文本框信息
         :return: dict, classify_text_location_res, 文本框分类结果信息
         """
-        # 存储分类结果：分别标记独立文本框和重叠文本框位置、索引
+        # 存储分类结果: 分别标记独立文本框和重叠文本框位置、索引
         classify_text_location_res = {'independent': [], 'independent_id': [],
                                       'overlap_group': [], 'overlap_group_id': []}
         text_location_list = gt_text_info['gt_text_locations']
@@ -387,7 +400,7 @@ class LqaProcessing:
         # 获得分组的重叠文本框数据
         temp_overlap_dict = LqaProcessing.get_overlap_group_data(gt_text_info)
 
-        # 按照分组的文本框结果, 保存格式化分类结果(重叠文本框合并处理)
+        # 按照分组的文本框结果, 保存格式化分类结果 (重叠文本框合并处理)
         for i in temp_overlap_dict:
             single_group_overlap = temp_overlap_dict[i]
             if len(single_group_overlap) <= 0:
@@ -400,11 +413,11 @@ class LqaProcessing:
 
     @staticmethod
     def rect_collision_detection(rect1, rect2, t=(0, 0, 0, 0)):
-        """矩形碰撞检测，有交集且不包含为True
-        :param rect1: 矩形框1位置, x1,y1,x2,y2格式
-        :param rect2: 矩形框2位置, x1,y1,x2,y2格式
+        """矩形碰撞检测, 有交集且不包含为 True
+        :param rect1: 矩形框1位置, x1,y1,x2,y2 格式
+        :param rect2: 矩形框2位置, x1,y1,x2,y2 格式
         :param t: 上下左右阈值
-        :return: bool,是否存在碰撞
+        :return: bool, 是否存在碰撞
         """
         # 无交集
         if rect1[0] + t[0] > rect2[2] or rect1[2] < rect2[0] + t[1] \
@@ -418,10 +431,10 @@ class LqaProcessing:
 
     @staticmethod
     def get_join_ocr_result(img, project=None):
-        """识别图像的ocr结果,并将结果聚合起来
+        """识别图像的 ocr 结果, 并将结果聚合起来
         :param img: ndarray, 图像数据
         :param project: str, 指定调用项目
-        :return: text_data: ocr识别结果
+        :return: text_data: ocr 识别结果
                  text_str: 聚合文本
         """
         text_str = ''
@@ -437,9 +450,9 @@ class LqaProcessing:
 
     @staticmethod
     def judge_ocr_location_extend(img, text_location, text_str, project=None):
-        """根据文本框信息和ocr识别结果判断文本框是否需要进行扩展
+        """根据文本框信息和 ocr 识别结果判断文本框是否需要进行扩展
         :param img: ndarray, 图像数据
-        :param text_location: 文本位置, x1,y1,x2,y2格式
+        :param text_location: 文本位置, x1,y1,x2,y2 格式
         :param text_str: str, 文本内容
         :param project: str, 指定调用项目
         :return: bool, 是否扩展
@@ -467,13 +480,13 @@ class LqaProcessing:
     @staticmethod
     def align_single_ocr_location(text_one, text_data, x1, y1, img_location, all_ocr_dict, align_location_list,
                                   align_ocr_res, extend=False):
-        """ocr识别单个结果微调校准
-        :param text_one: dict, 单ocr识别结果
-        :param text_data: list, ocr识别结果
-        :param x1: int, 文本位置坐标x_min
-        :param y1: int, 文本位置坐标y_min
+        """ocr 识别单个结果微调校准
+        :param text_one: dict, 单 ocr 识别结果
+        :param text_data: list, ocr 识别结果
+        :param x1: int, 文本位置坐标 x_min
+        :param y1: int, 文本位置坐标 y_min
         :param img_location: ndarray, 文本区域的图像
-        :param all_ocr_dict: dict, 全局ocr识别结果
+        :param all_ocr_dict: dict, 全局 ocr 识别结果
         :param align_location_list: list, 校准的位置信息
         :param align_ocr_res: list, 校准的文本信息
         :param extend: bool, 是否扩展文本区域
@@ -489,7 +502,7 @@ class LqaProcessing:
         img = img_location[ocr_y1:ocr_y2, ocr_x1:ocr_x2]
         if 0 in img.shape:
             return align_location_list, align_ocr_res
-        # 灰度值判断,过滤背景区域
+        # 灰度值判断, 过滤背景区域
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         if np.max(gray_img) < 120 and len(text_data) > 1:
             return align_location_list, align_ocr_res
@@ -542,12 +555,12 @@ class LqaProcessing:
 
     @staticmethod
     def align_ocr_location(text_location, img_location, text_data, all_ocr_dict, merge_location=True, extend=False):
-        """ocr识别结果微调校准
-        :param text_location: 文本位置, x1,y1,x2,y2格式
+        """ocr 识别结果微调校准
+        :param text_location: 文本位置, x1,y1,x2,y2 格式
         :param img_location: ndarray, 文本区域的图像
-        :param text_data: list, ocr识别结果
-        :param all_ocr_dict: dict, 全图像ocr识别结果
-        :param merge_location: bool, 是否合并检测出来的ocr文本区域
+        :param text_data: list, ocr 识别结果
+        :param all_ocr_dict: dict, 全图像 ocr 识别结果
+        :param merge_location: bool, 是否合并检测出来的 ocr 文本区域
         :param extend: bool, 是否扩展文本区域
         :return: align_res, list, 校准的位置信息
                  align_ocr_res, list, 校准的文本信息
@@ -565,7 +578,7 @@ class LqaProcessing:
                                                                                          align_location_list,
                                                                                          align_ocr_res,
                                                                                          extend=extend)
-        # 根据merge_location判断是否对文本框进行聚合处理
+        # 根据 merge_location 判断是否对文本框进行聚合处理
         align_res = []
         if len(align_location_list) > 0:
             if merge_location:
@@ -589,7 +602,7 @@ class LqaProcessing:
     def shrink_image_box(img, image_location):
         """缩小图像框
         :param img: ndarray, 图像
-        :param image_location: 图像框位置, x1,y1,x2,y2格式
+        :param image_location: 图像框位置, x1,y1,x2,y2 格式
         :return: 调整后的图像框位置
         """
         h, w = img.shape[:2]

@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 # @file: baseconfig.py
-# @time: 2022/1/6 18:05
-# @desc: 配置信息
+# @desc: LQA 服务基础配置模块, 包含调试模式开关 (DEBUG_MODE)、
+#        OCR 服务接入配置 (支持 rapidocr/paddleocr/tesseract/tencentcloud/baidu/azure 等多种 provider)、
+#        以及 LQA 检测所需的未译/错译标记和中文简繁体字符集等常量配置
 """
 import os
 import json
 
 DEBUG_MODE = os.getenv("DEBUG_MODE", 'True').upper() == "TRUE"
 
-# OCR服务配置（OCR 为可选能力）
-# OCR_PROVIDER 可选: rapidocr(默认,开源离线) / paddleocr / paddleocr_http / easyocr /
-#                   tesseract / tencentcloud / baidu / azure / cvtest(自建) /
-#                   none(显式关闭)
-# 留空或设为 none 时不进行任何 OCR 调用，服务仍可启动并完成不依赖 OCR 的检测
+# OCR 服务配置 (OCR 为可选能力)
+# OCR_PROVIDER 可选: rapidocr (默认, 开源离线) / paddleocr / paddleocr_http / easyocr /
+#                   tesseract / tencentcloud / baidu / azure / cvtest (自建) /
+#                   none (显式关闭)
+# 留空或设为 none 时不进行任何 OCR 调用, 服务仍可启动并完成不依赖 OCR 的检测
 OCR_PROVIDER = os.getenv("OCR_PROVIDER", "rapidocr")
 OCR_HOST = os.getenv("OCR_HOST", "")
 OCR_URL = os.getenv("OCR_URL", f"{OCR_HOST}/image/general/ocr/uiflow/" if OCR_HOST else "")
@@ -25,7 +26,7 @@ OCR_API_KEY = os.getenv("OCR_API_KEY", "")
 OCR_SECRET_ID = os.getenv("OCR_SECRET_ID", "")
 OCR_SECRET_KEY = os.getenv("OCR_SECRET_KEY", "")
 OCR_REGION = os.getenv("OCR_REGION", "ap-guangzhou")
-# tesseract 可执行文件路径（未加入 PATH 时需指定）
+# tesseract 可执行文件路径 (未加入 PATH 时需指定)
 OCR_TESSERACT_CMD = os.getenv("OCR_TESSERACT_CMD", "")
 # cvtest 专用
 OCR_PROJECT_ID = int(os.getenv("OCR_PROJECT_ID", "19998"))
@@ -49,7 +50,7 @@ def ocr_provider_config():
         "default_project": OCR_DEFAULT_PROJECT,
     }
 
-# LQA识别相关配置
+# LQA 识别相关配置
 NO_TRANS_MARK = os.getenv("NO_TRANS_MARK", "##")
 NO_TRANS_MARK_LIST = json.loads(os.getenv("NO_TRANS_MARK_LIST", '["##", "#N", "WWWW", "N/A"]'))
 ERROR_TRANS_MARK_LIST = json.loads(os.getenv("ERROR_TRANS_MARK_LIST", '["</",["color", "#"]]'))

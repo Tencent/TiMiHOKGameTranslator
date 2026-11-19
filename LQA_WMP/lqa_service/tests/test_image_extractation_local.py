@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 # @file: test_image_extraction_local.py
-# @time: 2022/7/27
-# @desc: 图像前景提取本地测试接口 (支持批量测试)
+# @desc: 图像前景提取本地测试脚本 (支持批量测试), 不经过 HTTP 请求, 直接在本地
+#        导入 task.image_processing.ImageProcessing 调用算法逻辑, 便于离线调试
+#        (排除网络/Flask 服务因素, 专注验证前景提取算法本身), 提供:
+#        - batch_test: 遍历 data_dir 下所有 .png 图片, 批量转为 base64 后调用
+#                     ImageProcessing.image_extraction 提取各图前景区域,
+#                     返回 {图像名: (x1,y1,x2,y2), ...} 结果字典
+#        - save_res: 根据 zero_type(坐标原点)/position_type(像素/比例坐标)
+#                     对提取结果做坐标还原, 在原图上绘制提取出的矩形框,
+#                     支持本地弹窗展示 (show_img) 和/或保存到指定目录 (save_img)
+#        - test: 测试入口, 串联 batch_test 和 save_res, 打印提取结果并输出标注图
+#
+#        用法: python tests/test_image_extractation_local.py
+#        可通过环境变量 LQA_TEST_DATA_DIR (待测图片目录, 默认 tests/test/) /
+#        LQA_TEST_SAVE_DIR (结果图保存目录, 默认 tests/test/result/) 指定路径
 """
 import base64
 import os

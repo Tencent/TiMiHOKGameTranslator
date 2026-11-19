@@ -1,21 +1,21 @@
 """
-禅道(ZenTao) 开源版 RESTful API v1 适配
+禅道 (ZenTao) 开源版 RESTful API v1 适配
 文档: https://www.zentao.net/book/api/setting-369.html
 
 项目配置:
-  base_url   禅道地址，如 http://zentao.example.com（不含 /api.php）
-  username   API 账号（需要 Bug 模块的创建/解决/关闭/激活权限，并关闭“首次登录强制修改密码”）
+  base_url   禅道地址, 如 http://zentao.example.com (不含 /api.php)
+  username   API 账号 (需要 Bug 模块的创建/解决/关闭/激活权限, 并关闭 “首次登录强制修改密码”)
   api_key    该账号的密码
-  product    产品ID（数字）
-  extra      可选 JSON：
-     bug_type          Bug 类型，默认 others（codeerror/config/install/security/performance/standard/automation/designdefect/others）
-     default_build     未选择“发现版本”时的影响版本，默认 trunk（主干）
-     project_id        禅道项目ID，填写后可拉取该项目的版本列表作为“发现版本”选项
-     execution_id      禅道执行ID（可选，创建 Bug 时关联）
+  product    产品 ID (数字)
+  extra      可选 JSON:
+     bug_type          Bug 类型, 默认 others (codeerror/config/install/security/performance/standard/automation/designdefect/others)
+     default_build     未选择 “发现版本” 时的影响版本, 默认 trunk (主干)
+     project_id        禅道项目 ID, 填写后可拉取该项目的版本列表作为 “发现版本” 选项
+     execution_id      禅道执行 ID (可选, 创建 Bug 时关联)
      priority_map / severity_map  覆盖 LQA -> 禅道 优先级(1~4)/严重程度(1~4)映射
 
-说明: 禅道 v1 API 未提供附件上传接口，截图会以 <img> 形式嵌入重现步骤中，
-      需要在 .env 中配置 PUBLIC_URL，且禅道用户的浏览器能访问 LQA 的 /media/ 路径。
+说明: 禅道 v1 API 未提供附件上传接口, 截图会以 <img> 形式嵌入重现步骤中,
+      需要在 .env 中配置 PUBLIC_URL, 且禅道用户的浏览器能访问 LQA 的 /media/ 路径
 """
 from typing import Dict, List
 
@@ -49,7 +49,7 @@ class ZentaoTracker(BugTracker):
         self.password = self.config.get('api_key', '')
         self.product = str(self.config.get('product', '')).strip()
         if not (self.base_url and self.account and self.password and self.product):
-            raise BugTrackerError('禅道配置不完整：需要地址、账号、密码、产品ID')
+            raise BugTrackerError('禅道配置不完整: 需要地址、账号、密码、产品ID')
         self.api = f'{self.base_url}/api.php/v1'
         self._token_key = f'zentao_token:{md5(f"{self.base_url}|{self.account}")}'
 
@@ -94,7 +94,7 @@ class ZentaoTracker(BugTracker):
             if public_url:
                 parts.append(f'<p><img src="{public_url}{url_path}" alt="screenshot" /></p>')
             else:
-                parts.append(f'<p>截图: {url_path}（未配置 PUBLIC_URL，无法内嵌图片）</p>')
+                parts.append(f'<p>截图: {url_path} (未配置 PUBLIC_URL, 无法内嵌图片)</p>')
         return ''.join(parts)
 
     def _builds(self, value):
@@ -121,7 +121,7 @@ class ZentaoTracker(BugTracker):
         data = self._req('POST', f'products/{self.product}/bugs', json=body)
         bug_id = str(data.get('id', ''))
         if not bug_id:
-            raise BugTrackerError(f'禅道未返回缺陷ID: {data}')
+            raise BugTrackerError(f'禅道未返回缺陷 ID: {data}')
         return bug_id
 
     def _get_bug(self, bug_id):
@@ -153,7 +153,7 @@ class ZentaoTracker(BugTracker):
             raise BugTrackerError(f'禅道缺陷不存在: {bug_id}')
         if bug.get('status') == 'closed':
             return
-        if bug.get('status') == 'active':   # 禅道只能关闭“已解决”的缺陷
+        if bug.get('status') == 'active':   # 禅道只能关闭 “已解决” 的缺陷
             self._req('POST', f'bugs/{bug_id}/resolve', json={
                 'resolution': 'fixed', 'resolvedBuild': self.extra.get('default_build', 'trunk'), 'comment': comment})
         self._req('POST', f'bugs/{bug_id}/close', json={'comment': comment})
@@ -162,7 +162,7 @@ class ZentaoTracker(BugTracker):
         bug = self._get_bug(bug_id)
         if not bug:
             raise BugTrackerError(f'禅道缺陷不存在: {bug_id}')
-        if bug.get('status') == 'active':   # 仍处于激活状态，无需重新激活
+        if bug.get('status') == 'active':   # 仍处于激活状态, 无需重新激活
             return
         body = {'comment': comment + self._img_html(attachments),
                 'openedBuild': self._builds('')}
@@ -202,4 +202,4 @@ class ZentaoTracker(BugTracker):
     def test_connection(self) -> str:
         self._token(refresh=True)
         product = self._req('GET', f'products/{self.product}')
-        return f"连接成功，产品: {product.get('name', self.product)}"
+        return f"连接成功, 产品: {product.get('name', self.product)}"

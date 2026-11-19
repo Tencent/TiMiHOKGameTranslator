@@ -1,5 +1,26 @@
 # -*- coding: utf-8 -*-
-"""其他可离线部署的 OCR 引擎适配：EasyOCR / Tesseract / RapidOCR"""
+"""
+# @file: ocr_provider/local_engines.py
+# @desc: 其他可离线部署的 OCR 引擎适配模块, 提供以下三个 provider 实现:
+#   - EasyOcr (name='easyocr')
+#       开源 OCR 引擎, 支持 80+ 语种, 识别结果为四点框
+#       依赖: pip install easyocr
+#       相关配置: OCR_LANG (逗号分隔的语言列表, 默认 ch_sim,en)、OCR_USE_GPU (是否启用 GPU)
+#       引擎以类变量缓存 (_reader), 同进程内仅初始化一次
+#   - RapidOcr (name='rapidocr', 默认 provider)
+#       PaddleOCR 模型的 ONNXRuntime 推理版, 无需安装 paddle 依赖, 体积小、启动快
+#       依赖: pip install rapidocr-onnxruntime
+#       引擎以类变量缓存 (_engine), 同进程内仅初始化一次
+#   - TesseractOcr (name='tesseract')
+#       开源老牌 OCR 引擎
+#       依赖: pip install pytesseract, 并需在系统中安装 tesseract 可执行程序及对应语言包
+#       相关配置: OCR_TESSERACT_CMD (tesseract 可执行文件路径, 未加入 PATH 时需指定)、
+#                 OCR_LANG (识别语言, 默认 chi_sim+eng)
+#       注意: 对游戏 UI 这类复杂背景、艺术字体的识别率明显低于 PaddleOCR,
+#            仅建议在简单纯色背景场景下使用
+#
+# 通过环境变量 OCR_PROVIDER 设置为对应 name 值 (easyocr/rapidocr/tesseract) 以启用相应实现
+"""
 import logging
 
 from .base import OcrProvider, OcrError, quad_to_box, base64_to_ndarray
@@ -8,7 +29,7 @@ logger = logging.getLogger('handle')
 
 
 class EasyOcr(OcrProvider):
-    """EasyOCR（开源，80+ 语种，返回四点框）
+    """EasyOCR (开源, 80+ 语种, 返回四点框)
 
     pip install easyocr
     """
@@ -24,7 +45,7 @@ class EasyOcr(OcrProvider):
         try:
             import easyocr
         except ImportError as err:
-            raise OcrError('未安装 EasyOCR，请执行: pip install easyocr') from err
+            raise OcrError('未安装 EasyOCR, 请执行: pip install easyocr') from err
         langs = [x.strip() for x in str(self.config.get('lang', 'ch_sim,en')).split(',') if x.strip()]
         use_gpu = str(self.config.get('use_gpu', 'false')).lower() == 'true'
         EasyOcr._reader = easyocr.Reader(langs, gpu=use_gpu, verbose=False)
@@ -51,7 +72,7 @@ class EasyOcr(OcrProvider):
 
 
 class RapidOcr(OcrProvider):
-    """RapidOCR（PaddleOCR 模型的 ONNXRuntime 推理版，无需 paddle 依赖，体积小）
+    """RapidOCR (PaddleOCR 模型的 ONNXRuntime 推理版, 无需 paddle 依赖, 体积小)
 
     pip install rapidocr-onnxruntime
     """
@@ -67,7 +88,7 @@ class RapidOcr(OcrProvider):
         try:
             from rapidocr_onnxruntime import RapidOCR
         except ImportError as err:
-            raise OcrError('未安装 RapidOCR，请执行: pip install rapidocr-onnxruntime') from err
+            raise OcrError('未安装 RapidOCR, 请执行: pip install rapidocr-onnxruntime') from err
         RapidOcr._engine = RapidOCR()
         logger.info('RapidOCR 引擎已加载')
         return RapidOcr._engine
@@ -92,11 +113,11 @@ class RapidOcr(OcrProvider):
 
 
 class TesseractOcr(OcrProvider):
-    """Tesseract（开源老牌引擎）
+    """Tesseract (开源老牌引擎)
 
-    pip install pytesseract  并安装 tesseract 可执行程序与语言包。
-    注意：对游戏 UI 这类复杂背景、艺术字体的识别率明显低于 PaddleOCR，
-    仅建议在简单纯色背景场景使用。
+    pip install pytesseract 并安装 tesseract 可执行程序与语言包
+    注意: 对游戏 UI 这类复杂背景、艺术字体的识别率明显低于 PaddleOCR,
+    仅建议在简单纯色背景场景使用
     """
 
     name = 'tesseract'
@@ -107,7 +128,7 @@ class TesseractOcr(OcrProvider):
             import pytesseract
             from pytesseract import Output
         except ImportError as err:
-            raise OcrError('未安装 pytesseract，请执行: pip install pytesseract') from err
+            raise OcrError('未安装 pytesseract, 请执行: pip install pytesseract') from err
 
         cmd = self.config.get('tesseract_cmd')
         if cmd:

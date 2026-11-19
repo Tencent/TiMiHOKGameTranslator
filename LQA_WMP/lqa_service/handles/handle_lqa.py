@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 # @file: handle_lqa.py
-# @time: 2022/1/23 16:42
-# @desc: lqa相关服务接口
+# @desc: LQA 服务相关 HTTP 接口 (Blueprint: app_lqa), 提供以下能力:
+#        - GET  /health                  健康检查接口, 供容器编排探活使用, 并返回 OCR 可用状态
+#        - POST /image/lqa_check/        图像本地化异常 (LQA) 检测接口, 支持 OCR 识别定位和已知坐标两种模式,
+#                                        可识别未译、错译等问题, 并支持与历史检测结果比对 (supervised)
+#        - POST /image/image_extraction/ 图像前景提取接口, 用于从截图中提取前景/文本区域
 """
 import time
 import json
@@ -16,9 +19,9 @@ from task.image_processing import ImageProcessing
 app_lqa = Blueprint('app_lqa', __name__)
 
 
-# 健康检查（供容器编排探活使用）
-# OCR 是可选能力，不可用时服务依然健康（返回 200），仅在 ocr 字段中体现，
-# 便于运维确认当前是否处于降级检测状态。
+# 健康检查 (供容器编排探活使用)
+# OCR 是可选能力, 不可用时服务依然健康 (返回 200), 仅在 ocr 字段中体现,
+# 便于运维确认当前是否处于降级检测状态
 @app_lqa.route("/health", methods=["GET"])
 def health():
     try:
@@ -35,7 +38,7 @@ def health():
     }, ensure_ascii=False)
 
 
-# lqa本地化异常检测服务接口
+# lqa 本地化异常检测服务接口
 @app_lqa.route("/image/lqa_check/", methods=["POST"])
 def image_lqa():
     t0 = time.time()
@@ -66,10 +69,10 @@ def image_lqa():
         if img_base64 is None or rect_locations is None:
             resp["err_msg"] = "img is None!"
             return
-        if ocr_detect == 1:  # 文本非精准位置，需要ocr识别
+        if ocr_detect == 1:  # 文本非精准位置, 需要 ocr 识别
             res = ImageLqa.lqa_check(img_base64, rect_locations, language, supervised, check_type,
                                      history_img_base64, history_result, project, no_trans_marks, error_trans_marks)
-        else:  # 文本框已经是文本实际最小外接矩，不需要识别
+        else:  # 文本框已经是文本实际最小外接矩, 不需要识别
             res = ImageLqa.lqa_check_no_ocr(img_base64, rect_locations, language, supervised, check_type,
                                             history_img_base64, history_result, project, no_trans_marks, error_trans_marks)
 

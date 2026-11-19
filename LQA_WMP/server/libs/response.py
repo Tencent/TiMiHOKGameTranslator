@@ -30,7 +30,7 @@ class ApiResponseBase(HttpResponse):
     def __init__(self, api_err: Choices = None, data=None, code=0, msg='', dump=True, **kwargs):
         self.data = _default_api_data(code, data, msg, api_err)
         kwargs.setdefault("content_type", "application/json")
-        # 业务错误统一返回 HTTP 500；认证失败(1003) 返回 401，前端据此跳转登录页
+        # 业务错误统一返回 HTTP 500; 认证失败 (1003) 返回 401, 前端据此跳转登录页
         kwargs.setdefault("status", 200 if self.data['code'] == 0 else (401 if self.data['code'] == 1003 else 500))
         data_s = self.json() if dump else ''
         self._dumped = dump

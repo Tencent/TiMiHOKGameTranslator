@@ -1,6 +1,6 @@
 """
-缺陷系统适配器测试：用本地模拟服务验证 Bugzilla / 禅道 适配器的请求格式与状态流转
-用法（需要可用的 MySQL/Redis，即 .env 配置）:
+缺陷系统适配器测试: 用本地模拟服务验证 Bugzilla / 禅道 适配器的请求格式与状态流转
+用法 (需要可用的 MySQL/Redis, 即 .env 配置):
     python scripts/test_bugtracker.py
 """
 import json
@@ -155,7 +155,7 @@ def ok(cond, title):
 
 
 def main():
-    # 确保禅道截图走 <img> 内嵌分支（不依赖 .env 的 PUBLIC_URL 配置）
+    # 确保禅道截图走 <img> 内嵌分支 (不依赖 .env 的 PUBLIC_URL 配置)
     import settings
     settings.PUBLIC_URL = 'http://lqa.test'
     server = ThreadingHTTPServer(('127.0.0.1', 0), MockHandler)
@@ -185,7 +185,7 @@ def main():
        and body['priority'] == 'High' and body['severity'] == 'critical' and body['target_milestone'] == 'M1'
        and body['assigned_to'] == 'dev' and body['cc'] == ['dev3'] and body['cf_platform'] == 'PC'
        and '<' not in body['description'] and '1.页面中【KEY】存在 漏译 问题' in body['description'],
-       'Bugzilla 创建缺陷字段映射（HTML 转纯文本、优先级/严重程度映射、自定义字段）')
+       'Bugzilla 创建缺陷字段映射 (HTML 转纯文本、优先级/严重程度映射、自定义字段)')
     att = last_call('POST', '/attachment')[3]
     ok(att['ids'] == [int(bug_id)] and att['content_type'] == 'image/png' and att['data'], 'Bugzilla 上传截图附件')
     ok(bz.bug_url(bug_id) == f'{base}/show_bug.cgi?id={bug_id}', 'Bugzilla 缺陷链接')
@@ -213,20 +213,20 @@ def main():
                                     'api_key': 'zt-pass', 'product': '3', 'extra': {'project_id': 5}})
     from libs import cache
     cache.get_redis_client().delete(f'{cache.BASE_KEY}{zt._token_key}')
-    ok(zt.test_connection() == '连接成功，产品: 游戏A', '禅道 测试连接（获取 Token）')
+    ok(zt.test_connection() == '连接成功, 产品: 游戏A', '禅道 测试连接 (获取 Token)')
     bug_id = zt.create_bug(payload, [img.name])
     body = last_call('POST', '/products/3/bugs')[3]
     ok(body['pri'] == 2 and body['severity'] == 1 and body['openedBuild'] == ['1.0'] and body['type'] == 'others'
        and body['assignedTo'] == 'dev' and '<p>步骤' in body['steps'] and '<img' in body['steps'],
-       '禅道 创建缺陷字段映射（重现步骤内嵌截图）')
+       '禅道 创建缺陷字段映射 (重现步骤内嵌截图)')
     ok(zt.get_bugs([bug_id, '99999'])[bug_id].status == 'active' and '99999' not in zt.get_bugs(['99999']),
-       '禅道 查询缺陷（不存在的缺陷不返回）')
+       '禅道 查询缺陷 (不存在的缺陷不返回)')
     opts = zt.get_options()
     ok(opts['version_report_list'][1] == {'value': '12', 'label': 'build-12'}
        and opts['release_id_list'] == [{'value': '8', 'label': '1.0 发布'}], '禅道 版本/计划选项')
     zt.close_bug(bug_id, '回归通过')
     ok(MockHandler.bugs[f'zt{bug_id}']['status'] == 'closed' and last_call('POST', '/resolve'),
-       '禅道 回归通过：激活状态先解决再关闭')
+       '禅道 回归通过: 激活状态先解决再关闭')
     zt.reopen_bug(bug_id, '<p>回归不通过</p>', [img.name], '')
     active = last_call('POST', f'/bugs/{bug_id}/active')[3]
     ok(MockHandler.bugs[f'zt{bug_id}']['status'] == 'active' and active['openedBuild'] == ['trunk']

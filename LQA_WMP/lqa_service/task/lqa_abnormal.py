@@ -1,8 +1,24 @@
 # -*- coding: utf-8 -*-
 """
 # @file: lqa_abnormal.py
-# @time: 2022/06/10
-# @desc: lqa地本化异常检测相关接口
+# @desc: LQA 本地化异常检测核心判断逻辑模块, 提供以下三个类:
+#        - ErrorTrans: 错译检测类, 根据错译标记词 (error_trans_marks) 判断文本/OCR 结果是否命中错译,
+#                     并支持从全图 OCR 结果中过滤出所有错译候选项
+#        - OverlapText: 重叠文本框处理类, 当多个标准文本框存在重叠 (合并为一个外接矩形) 时,
+#                     通过 OCR 识别该区域并按重叠面积归属各子文本框, 必要时对 OCR 结果做二值化
+#                     细分割 (split_ocr), 再逐一判断子文本框是否存在错译/超框/重叠等异常
+#        - LqaAbnormal: 异常检测主类, 汇总各类判断方法:
+#                     * no_trans: 漏译检测 (命中漏译标记词)
+#                     * no_key: 漏key检测 (简繁体字符集比对, 识别出简体中文残留)
+#                     * custom_abnormal: 自定义 non_problem 标记检测
+#                     * error_trans: 错译检测 (全局/单文本框两种模式)
+#                     * text_overframe/ocr_image_overlap: 文本超文本框、文本与图像框重叠的碰撞检测
+#                     * judge_single_text/judge_single_text_no_ocr: 对单个文本框执行全部类型检测
+#                       (分别对应依赖 OCR 识别定位 和 已知精确坐标两种模式)
+#                     * judge_single_independent_text: 对无重叠的独立文本框做 OCR 位置校准后再检测
+#                     * judge_single_group_overlap_text: 对一组重叠文本框做 OCR 识别、归属判断及检测
+#                     * update_check_type_detail/update_check_res: 统一记录检测结果详情,
+#                       并在结果图上绘制对应的标注框 (需排除已被人工监督确认的数据)
 """
 import cv2
 import json
@@ -26,7 +42,7 @@ class ErrorTrans:
         :return: have_error_trans_mark, bool, 是否包含错译标记词条
         """
         have_error_trans_mark = False
-        if not text_str:  # 标准数据未提供文本内容，无从判断
+        if not text_str:  # 标准数据未提供文本内容, 无从判断
             return have_error_trans_mark
         if error_trans_marks not in ['', None]:  # 项目自定义
             error_trans_marks_list = json.loads(error_trans_marks)
@@ -49,10 +65,10 @@ class ErrorTrans:
 
     @staticmethod
     def filter_error_trans_ocr_data(all_ocr_dict, error_trans_marks):
-        """从检测图像所有ocr结果中,过滤出包含错误翻译标记的数据
-        :param all_ocr_dict: dict, 全图ocr识别结果
+        """从检测图像所有 ocr 结果中, 过滤出包含错误翻译标记的数据
+        :param all_ocr_dict: dict, 全图 ocr 识别结果
         :param error_trans_marks: str, 错译标识
-        :return: all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的ocr识别结果
+        :return: all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的 ocr 识别结果
         """
         all_ocr_error_trans_dict = {}
         for ocr_result in all_ocr_dict:
@@ -69,7 +85,7 @@ class ErrorTrans:
         """
         for ocr_str in ocr_data:
             for ocr_location in ocr_data[ocr_str]:
-                # 文本区域与错译ocr_data发生碰撞
+                # 文本区域与错译 ocr_data 发生碰撞
                 is_overlap, ratio, _ = LqaProcessing.overlap(text_location, ocr_location, x_t=0, y_t=0)
                 if is_overlap and ratio > 0.3:
                     return True
@@ -99,10 +115,10 @@ class OverlapText:
 
     @staticmethod
     def judge_overlap_ocr_belong(align_res, align_ocr_res, group_id, gt_text_locations):
-        """判断重叠文本框中各个OCR子项的归属
+        """判断重叠文本框中各个 OCR 子项的归属
         :param align_res: list, ocr识别位置信息
-        :param align_ocr_res: list, ocr识别文本信息
-        :param group_id: list, 多个重叠文本框聚合的id列表
+        :param align_ocr_res: list, ocr 识别文本信息
+        :param group_id: list, 多个重叠文本框聚合的 id 列表
         :param gt_text_locations: dict, 所有文本框信息
         :return: overlap_info, 重叠文本框归属信息
         """
@@ -136,12 +152,12 @@ class OverlapText:
     @staticmethod
     def check_every_overlap_ocr(check_type, rect_img, lqa_img, overlap_info, text_location_list, gt_text_locations,
                                 res, check_detail, supervised_info, error_trans_marks):
-        """判断重叠文本框中各个OCR子项的归属
+        """判断重叠文本框中各个 OCR 子项的归属
         :param check_type: list, 检测类型
         :param rect_img: ndarray, 标记图
         :param lqa_img: ndarray, lqa识别结果图
         :param overlap_info: dict, 一组重叠文本框的信息
-        :param text_location_list: list, 待测试文本框信息（去掉脏数据等）
+        :param text_location_list: list, 待测试文本框信息 (去掉脏数据等)
         :param gt_text_locations: list, 标准文本框信息
         :param res: dict, 结果数据
         :param check_detail: dict, 已检测结果详情
@@ -176,7 +192,7 @@ class OverlapText:
                                                                                   lqa_img,
                                                                                   overlap_item_i['gt_location'],
                                                                                   DrawStyle.ERROR_TRANS.value)
-            # 碰撞检测，文本超过文本框
+            # 碰撞检测, 文本超过文本框
             type_id = LqaCheckType.OVER_FRAME.value
             sub_type_id = LqaCheckSubType.OVER_FRAME_TEXT_TEXT.value
             check_type_id = str(type_id) + "-" + str(sub_type_id)
@@ -206,7 +222,7 @@ class OverlapText:
     def sorted_detail_data(group_text_id, text_location_list, gt_text_locations):
         """结果详情排序
         :param group_text_id: list, 一组重叠文本框对应的索引列表
-        :param text_location_list: list, 待测试文本框信息（去掉脏数据等）
+        :param text_location_list: list, 待测试文本框信息 (去掉脏数据等)
         :param gt_text_locations: list, 标准文本框信息
         :return: detail_data, 排序后的结果详情
         """
@@ -294,9 +310,9 @@ class OverlapText:
 
     @staticmethod
     def split_ocr(img, ocr_location, k):
-        """ ocr识别结果细分割, 将ocr_location区域分为k个子区域
+        """ ocr 识别结果细分割, 将 ocr_location 区域分为 k 个子区域
         :param img: ndarray, 图像
-        :param ocr_location: list, x1,y1,x2,y2格式
+        :param ocr_location: list, x1,y1,x2,y2 格式
         :param k: int, 分割子串数目
         :return: split_ocr_locations, list, 分割结果
         """
@@ -321,13 +337,13 @@ class OverlapText:
     @staticmethod
     def recheck_every_overlap_ocr(check_type, img, rect_img, lqa_img, overlap_item, group_id, gt_text_locations,
                                   res, check_detail, detail_data, supervised_info):
-        """细粒度判断重叠文本框中的OCR子项
+        """细粒度判断重叠文本框中的 OCR 子项
         :param check_type: list, 检测类型
         :param img: ndarray, 原测试图
         :param rect_img: ndarray, 标记图
-        :param lqa_img: ndarray, lqa识别结果图
+        :param lqa_img: ndarray, lqa 识别结果图
         :param overlap_item: dict, 一组重叠文本框的子文本框
-        :param group_id: list, 待测试文本框信息（去掉脏数据等）
+        :param group_id: list, 待测试文本框信息 (去掉脏数据等)
         :param gt_text_locations: list, 标准文本框信息
         :param res: dict, 结果数据
         :param check_detail: dict, 已检测结果详情
@@ -374,15 +390,15 @@ class OverlapText:
 
 
 class LqaAbnormal:
-    """lqa数据异常检测类"""
+    """lqa 数据异常检测类"""
 
     @staticmethod
     def update_check_type_detail(check_detail, type_id, data, sub_type_id=None):
         """检测结果分类详情
         :param check_detail: dict, 结果分类详情
-        :param type_id: int 问题类型id
+        :param type_id: int 问题类型 id
         :param data: 记录的详细数据
-        :param sub_type_id: int 问题子类型id
+        :param sub_type_id: int 问题子类型 id
         :return: res, 更新后的结果数据
                  check_detail, 更新后的检测结果详情
                  img, 标记后的图像
@@ -412,13 +428,13 @@ class LqaAbnormal:
         """标记异常
         :param res: dict, 结果数据
         :param check_detail: dict, 已检测结果详情
-        :param type_id: int, 异常检测类型id
+        :param type_id: int, 异常检测类型 id
         :param detail_data: list, 待记录数据
         :param supervised_detail_data: list, 监督数据列表
         :param img: ndarray, 图像
         :param draw_rect: x1, y1, x2, y2, 标记位置
-        :param draw_style: tuple, 绘制样式, 取值DrawStyle,包括颜色, 线条size
-        :param sub_type_id: int, 异常检测子类型id
+        :param draw_style: tuple, 绘制样式, 取值 DrawStyle, 包括颜色, 线条 size
+        :param sub_type_id: int, 异常检测子类型 id
         :return: res, 更新后的结果数据
                  check_detail, 更新后的检测结果详情
                  img, 标记后的图像
@@ -432,14 +448,14 @@ class LqaAbnormal:
 
     @staticmethod
     def no_key(text_str, language):
-        """简体中文漏key检测
+        """简体中文漏 key 检测
         :param text_str: str, 待检测文本
-        :param language: int, 语言int
+        :param language: int, 语言 int
         :return: is_abnormal, bool, 是否异常
         """
         is_abnormal = False
         traditional_chinese = False
-        if not text_str:  # 标准数据未提供文本内容，无从判断
+        if not text_str:  # 标准数据未提供文本内容, 无从判断
             return is_abnormal
         ocr_set = set(list(text_str))
         # 判断有繁体字
@@ -448,7 +464,7 @@ class LqaAbnormal:
             traditional_chinese = True
         #  判断有简体中文
         simple_intersection = ocr_set & SIMPLIFIED_CHINESE_SET
-        # 异常判断：1.没有繁体中文但存在简体中文 2.外语误识别的中文
+        # 异常判断: 1.没有繁体中文但存在简体中文 2.外语误识别的中文
         if not traditional_chinese and simple_intersection:
             if language == Language.ja_JP.value:
                 if len(simple_intersection) == len(ocr_set):
@@ -466,7 +482,7 @@ class LqaAbnormal:
         :return: is_abnormal, bool, 是否异常
         """
         is_abnormal = False
-        if not text_str:  # 标准数据未提供文本内容，无从判断
+        if not text_str:  # 标准数据未提供文本内容, 无从判断
             return is_abnormal
         if no_trans_marks not in ['', None]:  # 项目自定义
             no_trans_marks_list = json.loads(no_trans_marks)
@@ -480,13 +496,13 @@ class LqaAbnormal:
 
     @staticmethod
     def custom_abnormal(text_str, tag_text=NON_PROBLEM_MARK):
-        """自定义类型non_problem检测
+        """自定义类型 non_problem 检测
         :param text_str: str, 待检测文本
         :param tag_text: str, 自定义命中的标记文本
         :return: over_frame, bool, 是否异常
         """
         is_abnormal = False
-        if not text_str:  # 标准数据未提供文本内容，无从判断
+        if not text_str:  # 标准数据未提供文本内容, 无从判断
             return is_abnormal
         if tag_text in text_str:
             is_abnormal = True
@@ -496,15 +512,15 @@ class LqaAbnormal:
     def error_trans(text_str, text_location, ocr_data, error_trans_marks, check_type='all'):
         """错误翻译检测
         :param text_str: str, 待检测文本
-        :param text_location: list, 待检测文本位置[ x_min, y_min, x_max, y_max]
-        :param ocr_data: ocr识别结果数据
+        :param text_location: list, 待检测文本位置 [ x_min, y_min, x_max, y_max]
+        :param ocr_data: ocr 识别结果数据
         :param error_trans_marks: str, 错译标识
-        :param check_type: str, all全局, single, 单文本框
+        :param check_type: str, all 全局, single, 单文本框
         :return: is_abnormal, bool, 是否异常
 
         """
         is_abnormal = False
-        # 标注数据不存在错译，可以直接返回，无需检测
+        # 标注数据不存在错译, 可以直接返回, 无需检测
         if not ErrorTrans.error_trans_mark(text_str, error_trans_marks):
             return is_abnormal
         if ocr_data and text_location and len(text_location) == 4:
@@ -518,7 +534,7 @@ class LqaAbnormal:
     def text_overframe(ocr_location, text_location, t=(0, 0, 0, 0)):
         """文本超文本框
         :param ocr_location: list, 识别的文本区域 [ x_min, y_min, x_max, y_max]
-        :param text_location: list, 待检测文本位置[ x_min, y_min, x_max, y_max]
+        :param text_location: list, 待检测文本位置 [ x_min, y_min, x_max, y_max]
         :param t: 上下左右阈值
         :return: bool, 是否异常
         """
@@ -530,9 +546,9 @@ class LqaAbnormal:
         """文本和图像重叠检测
         :param img: ndarray, 图像
         :param gt_image_info: dict, 标准图像框信息
-        :param ocr_location: dict, 文本框位置坐标(x1, y1, x2, y2)
+        :param ocr_location: dict, 文本框位置坐标 (x1, y1, x2, y2)
         :return: collision, bool, 是否碰撞
-                image_location, 发生碰撞的图像框位置坐标(x1, y1, x2, y2)
+                image_location, 发生碰撞的图像框位置坐标 (x1, y1, x2, y2)
         """
         collision = False
         image_location = None
@@ -542,7 +558,7 @@ class LqaAbnormal:
             if i in dirty_image_ids:  # 脏图像框数据不检测
                 continue
             image_location = gt_image_locations[i]
-            # 碰撞检测，文本本身超过图像框
+            # 碰撞检测, 文本本身超过图像框
             collision = LqaProcessing.rect_collision_detection(ocr_location, image_location, t=(5, 5, 5, 5))
             if collision:
                 rectified_image_location = LqaProcessing.shrink_image_box(img, image_location)
@@ -562,21 +578,21 @@ class LqaAbnormal:
                           no_trans_marks, error_trans_marks, non_rectangle=False, project=None):
         """针对每一个文本框做判断和检查
         :param check_type: list, 异常检测类型
-        :param language: int, 语种id
-        :param text_index: int, 处理的第text_index个文本框
+        :param language: int, 语种 id
+        :param text_index: int, 处理的第 text_index 个文本框
         :param img: ndarray, 原图像
         :param gt_image_info: dict, 标准图像框信息
         :param gt_text_locations: list, 标准文本框位置信息
         :param classify_text_location_res: dict, 文本框分类结果
-        :param all_ocr_dict: dict, 全图ocr识别结果
-        :param all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的ocr识别结果
+        :param all_ocr_dict: dict, 全图 ocr 识别结果
+        :param all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的 ocr 识别结果
         :param no_trans_list: list, 半监督漏译信息
         :param over_frame_text_text_list: list, 半监督文本超框信息
         :param over_frame_text_image_list: list, 半监督文本超图像框信息
-        :param no_key_list: list, 半监督漏key信息
+        :param no_key_list: list, 半监督漏 key 信息
         :param error_trans_list: list, 半监督错译信息
-        :param non_problem_list: list, 半监督non_problem信息
-        :param non_rectangle_list: list, 半监督non_rectangle信息
+        :param non_problem_list: list, 半监督 non_problem 信息
+        :param non_rectangle_list: list, 半监督 non_rectangle 信息
         :param text_location_list: list, 半监督预处理后的文本信息
         :param lqa_img: ndarray, 结果图像
         :param rect_img: ndarray, 标记图像
@@ -584,7 +600,7 @@ class LqaAbnormal:
         :param check_detail: dict, 结果详情
         :param no_trans_marks: str, 漏译标识
         :param error_trans_marks: str, 错译标识
-        :param non_rectangle: bool, 非标框， 默认都是标准框，非标框不做碰撞检测
+        :param non_rectangle: bool, 非标框, 默认都是标准框, 非标框不做碰撞检测
         :param project: str, 指定调用项目
         :return: res, check_detail, rect_img, lqa_img
         """
@@ -608,7 +624,7 @@ class LqaAbnormal:
                                                                           gt_text_locations[text_index],
                                                                           draw_style)
 
-        # 自定义类型检测non_problem标记
+        # 自定义类型检测 non_problem 标记
         check_type_id = LqaCheckType.NON_PROBLEM.value
         if check_type is None or str(check_type_id) in check_type:
             is_abnormal = LqaAbnormal.custom_abnormal(text_str, tag_text=NON_PROBLEM_MARK)
@@ -671,7 +687,7 @@ class LqaAbnormal:
                                                                           gt_text_locations[text_index],
                                                                           draw_style)
 
-        # 独立无重叠的文本框（排除非标框）
+        # 独立无重叠的文本框 (排除非标框)
         if not non_rectangle and text_index in classify_text_location_res['independent_id']:
             x1, y1, x2, y2 = gt_text_locations[text_index]
             text_location = (x1, y1, x2, y2)
@@ -688,7 +704,7 @@ class LqaAbnormal:
                                       lqa_img, rect_img, res, check_detail, error_trans_marks, project=None):
         """检测每一个独立文本框
         :param check_type: list, 异常检测类型
-        :param text_index: int, 处理的第text_index个文本框
+        :param text_index: int, 处理的第 text_index 个文本框
         :param text_location: 文本位置信息
         :param text_str: str, 文本内容
         :param img: ndarray, 原图像
@@ -713,12 +729,12 @@ class LqaAbnormal:
                                                                                   project=project)
         if text_data is None or img_location is None:
             return res, check_detail, rect_img, lqa_img
-        # 文本框ocr位置校准微调
+        # 文本框 ocr 位置校准微调
         align_res, _ = LqaProcessing.align_ocr_location(text_location, img_location, text_data, all_ocr_dict,
                                                         extend=extend)
         if len(align_res) != 1:
             return res, check_detail, rect_img, lqa_img
-        # 文本框ocr位置校准微调
+        # 文本框 ocr 位置校准微调
         ocr_x1, ocr_y1, ocr_x2, ocr_y2 = align_res[0]
         rect_img = img_draw_rect(rect_img, align_res[0], draw_style=DrawStyle.OCR.value)
 
@@ -789,12 +805,12 @@ class LqaAbnormal:
                                         project=None):
         """检测每一组重叠文本框
         :param check_type: list, 异常检测类型
-        :param group_index: int, 处理的第group_index组文本框
+        :param group_index: int, 处理的第 group_index 组文本框
         :param overlap_group: list, 重叠文本框信息
-        :param overlap_group_id: list, 重叠文本框分组信息（记录文本框索引）
+        :param overlap_group_id: list, 重叠文本框分组信息 (记录文本框索引)
         :param img: ndarray, 原图像
         :param gt_text_locations: list, 标准文本框位置信息
-        :param all_ocr_dict: dict, 全图ocr识别结果
+        :param all_ocr_dict: dict, 全图 ocr 识别结果
         :param classify_text_location_res: dict, 文本框分类结果
         :param text_location_list: dict, 预处理后文本框信息
         :param overlap_list: list, 半监督文本框重叠信息
@@ -822,7 +838,7 @@ class LqaAbnormal:
         # 判断重叠文本框归属
         overlap_info = OverlapText.judge_overlap_ocr_belong(align_res, align_ocr_res, group_id,
                                                             gt_text_locations)
-        # OCR识别结果和重叠文本框数相同
+        # OCR 识别结果和重叠文本框数相同
         if len(overlap_info) == len(group_id):
             supervised_info = {'error_trans': error_trans_list,
                                'over_frame_text_text': over_frame_text_text_list
@@ -856,22 +872,22 @@ class LqaAbnormal:
                                  no_key_list,  non_problem_list, non_rectangle_list,
                                  text_location_list, lqa_img, rect_img, res, check_detail,
                                  no_trans_marks, error_trans_marks, non_rectangle=False, project=None):
-        """针对每一个文本框做判断和检查(精准位置，无ocr检测)
+        """针对每一个文本框做判断和检查 (精准位置, 无 ocr 检测)
         :param check_type: list, 异常检测类型
-        :param language: int, 语种id
-        :param text_index: int, 处理的第text_index个文本框
+        :param language: int, 语种 id
+        :param text_index: int, 处理的第 text_index 个文本框
         :param img: ndarray, 原图像
         :param gt_image_info: dict, 标准图像框信息
         :param gt_text_locations: list, 标准文本框位置信息
         :param all_ocr_dict: dict, 全图ocr识别结果
-        :param all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的ocr识别结果
+        :param all_ocr_error_trans_dict, dict, 所有包含错误翻译标记的 ocr 识别结果
         :param no_trans_list: list, 半监督漏译信息
         :param error_trans_list: list, 半监督错译信息
         :param over_frame_text_text_list: list, 半监督文本超框信息
         :param over_frame_text_image_list: list, 半监督文本超图像框信息
-        :param no_key_list: list, 半监督漏key信息
-        :param non_problem_list: list, 半监督non_problem信息
-        :param non_rectangle_list: list, 半监督non_rectangle信息
+        :param no_key_list: list, 半监督漏 key 信息
+        :param non_problem_list: list, 半监督 non_problem 信息
+        :param non_rectangle_list: list, 半监督 non_rectangle 信息
         :param text_location_list: list, 半监督预处理后的文本信息
         :param lqa_img: ndarray, 结果图像
         :param rect_img: ndarray, 标记图像
@@ -879,7 +895,7 @@ class LqaAbnormal:
         :param check_detail: dict, 结果详情
         :param no_trans_marks: str, 漏译标识
         :param error_trans_marks: str, 错译标识
-        :param non_rectangle: bool, 非标框， 默认都是标准框，非标框不做碰撞检测
+        :param non_rectangle: bool, 非标框, 默认都是标准框, 非标框不做碰撞检测
         :param project: str, 指定调用项目
         :return: res, check_detail, rect_img, lqa_img
         """
@@ -922,7 +938,7 @@ class LqaAbnormal:
                                                                           gt_text_locations[text_index],
                                                                           draw_style)
 
-        # 自定义类型检测non_problem标记
+        # 自定义类型检测 non_problem 标记
         check_type_id = LqaCheckType.NON_PROBLEM.value
         if check_type is None or str(check_type_id) in check_type:
             is_abnormal = LqaAbnormal.custom_abnormal(text_str, tag_text=NON_PROBLEM_MARK)
@@ -951,7 +967,7 @@ class LqaAbnormal:
                                                                           lqa_img,
                                                                           gt_text_locations[text_index],
                                                                           draw_style)
-        # 漏key检测
+        # 漏 key 检测
         check_type_id = LqaCheckType.NO_KEY.value
         if check_type is None or str(check_type_id) in check_type:
             is_abnormal = LqaAbnormal.no_key(text_str, language)

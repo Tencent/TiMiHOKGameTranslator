@@ -1,8 +1,8 @@
 """
-后端接口冒烟测试（不依赖外部系统）
+后端接口冒烟测试 (不依赖外部系统)
 用法:
     python scripts/smoke_test.py http://127.0.0.1:8000 admin Admin123456
-会在库中创建以 smoke_ 开头的测试项目与用户。
+会在库中创建以 smoke_ 开头的测试项目与用户
 """
 import sys
 import time
@@ -45,7 +45,7 @@ def main():
     check(r.json()['code'] == 0, '超级管理员登录', r)
     r = api(admin, 'GET', '/api/user/entity')
     user = r.json()['data']['user']
-    check(user['is_admin'] == 1 and 'password' not in user, '获取当前用户（不返回密码哈希）', r)
+    check(user['is_admin'] == 1 and 'password' not in user, '获取当前用户 (不返回密码哈希)', r)
 
     # ---- 注册
     username = f'smoke_{suffix}'
@@ -60,7 +60,7 @@ def main():
     r = api(member, 'POST', '/api/user/login', json={'username': username, 'password': 'Smoke12345'})
     check(r.json()['code'] == 0, '新用户登录', r)
     r = api(member, 'GET', '/api/user/permission')
-    check(r.json()['data']['projects'] == [], '新注册用户没有任何项目（需管理员分配）', r)
+    check(r.json()['data']['projects'] == [], '新注册用户没有任何项目 (需管理员分配)', r)
 
     # ---- 项目
     code = f'smoke_{suffix}'
@@ -76,15 +76,15 @@ def main():
     r = api(admin, 'GET', '/api/user/list', params={'name': username, 'info_type': 0})
     uid = r.json()['data']['list'][0]['id']
     r = api(admin, 'PATCH', '/api/user/entity', json={'id': uid, 'roles': [f'{project_id}_2']})
-    check(r.json()['code'] == 0, '管理员为新用户分配“测试人员”角色', r)
+    check(r.json()['code'] == 0, '管理员为新用户分配 “测试人员” 角色', r)
     r = api(member, 'GET', '/api/user/permission')
     check([p['id'] for p in r.json()['data']['projects']] == [project_id], '成员获得项目权限', r)
 
-    # ---- 缺陷系统配置（密钥掩码）
+    # ---- 缺陷系统配置 (密钥掩码)
     r = api(admin, 'PATCH', '/api/project/config?cate=BugTracker', json={
         'project_id': project_id, 'tracker_type': 'bugzilla', 'base_url': 'http://127.0.0.1:9',
         'api_key': 'secret-key', 'product': 'P', 'component': 'C'})
-    check(r.json()['code'] == 0 and r.json()['data']['config']['api_key'] == '******', '保存缺陷系统配置（返回掩码）', r)
+    check(r.json()['code'] == 0 and r.json()['data']['config']['api_key'] == '******', '保存缺陷系统配置 (返回掩码)', r)
     r = api(admin, 'PATCH', '/api/project/config?cate=BugTracker', json={
         'project_id': project_id, 'tracker_type': 'bugzilla', 'base_url': 'http://127.0.0.1:9',
         'api_key': '******', 'product': 'P2', 'component': 'C'})
@@ -99,9 +99,9 @@ def main():
     check(r.json()['code'] == 1000 and 'Bugzilla' in r.json()['msg'], '缺陷系统不可达时返回明确错误', r)
     r = api(admin, 'PATCH', '/api/project/config?cate=BugTracker', json={'project_id': project_id, 'tracker_type': 'none'})
     r = api(member, 'GET', f'/api/bug/tracker_meta?project_id={project_id}')
-    check(r.json()['data']['type'] == 'none', '切换为“平台内记录”', r)
+    check(r.json()['data']['type'] == 'none', '切换为 “平台内记录”', r)
 
-    # ---- 还原执行（Webhook）
+    # ---- 还原执行 (Webhook)
     r = api(admin, 'PATCH', '/api/project/config?cate=Other', json={
         'project_id': project_id, 'webhook_url': 'not-a-url'})
     check(r.json()['code'] == 1001, 'Webhook 地址格式校验', r)
@@ -124,10 +124,10 @@ def main():
     data = r.json()['data']
     trigger = data.get('trigger', {})
     check(r.json()['code'] == 0 and trigger.get('url') ==
-          f'https://ci.example.com/job/lqa/buildWithParameters?JOB={job_id}', '开始任务：返回渲染后的 Webhook 地址', r)
+          f'https://ci.example.com/job/lqa/buildWithParameters?JOB={job_id}', '开始任务: 返回渲染后的 Webhook 地址', r)
     check(trigger['headers']['Authorization'] == f'Bearer t-{code}' and trigger['body']['job'] == job_id
           and trigger['body']['langs'] == [2, 6] and trigger['body']['name'] == f'任务-smoke job {suffix}',
-          'Webhook 请求头/请求体变量替换（保留原始类型）', r)
+          'Webhook 请求头/请求体变量替换 (保留原始类型)', r)
 
     r = api(member, 'POST', '/api/job/action', json={'action': 'started', 'job_id': job_id, 'build_id': '#42'})
     check(r.json()['code'] == 0, 'Webhook 调用成功后回调 started', r)
@@ -168,7 +168,7 @@ def main():
     r = api(admin, 'GET', '/api/user/entity')
     check(r.json()['code'] == 1003, '退出后会话失效', r)
 
-    print(f'\n全部通过：{_passed} 项')
+    print(f'\n全部通过: {_passed} 项')
 
 
 if __name__ == '__main__':

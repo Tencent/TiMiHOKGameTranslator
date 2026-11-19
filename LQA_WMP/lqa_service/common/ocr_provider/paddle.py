@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
-"""PaddleOCR 适配
-
-两种使用方式：
-  - ``paddleocr``        本进程内加载 PaddleOCR 模型（需 pip install paddleocr paddlepaddle）
-  - ``paddleocr_http``   调用 PaddleOCR 官方 hubserving / PaddleX 部署的 HTTP 服务
-
-PaddleOCR 对中日韩、拉丁语系支持好，可离线部署，是开源场景的推荐选择。
+"""
+# @file: ocr_provider/paddle.py
+# @desc: PaddleOCR 适配模块, 提供两个 OCR provider 实现:
+#   - PaddleOcrLocal (name='paddleocr')
+#       本进程内直接加载 PaddleOCR 模型进行识别 (离线, 无需外部服务)
+#       依赖: pip install paddleocr paddlepaddle
+#       相关配置: OCR_LANG (识别语言，默认 ch)、OCR_USE_GPU (是否启用 GPU, 默认 false)
+#       模型以类变量缓存 (_engine), 同进程内仅加载一次, 兼容新旧版本 PaddleOCR 的初始化参数差异
+#   - PaddleOcrHttp (name='paddleocr_http')
+#       调用 PaddleOCR 官方 hubserving / PaddleX 部署的 HTTP 服务进行远程识别
+#       相关配置: OCR_URL (服务地址, 必填)、OCR_TIMEOUT (请求超时时间, 默认 60s)
+#       期望响应格式: {"results": [[{"text": "abc", "text_region": [[x,y],...]}, ...]]}
+#
+# PaddleOCR 对中日韩、拉丁语系支持较好, 可离线部署, 是一般场景下的推荐选择
+# 通过环境变量 OCR_PROVIDER 设置为 paddleocr 或 paddleocr_http 以启用对应实现
 """
 import base64
 import logging
@@ -18,7 +26,7 @@ logger = logging.getLogger('handle')
 
 
 class PaddleOcrLocal(OcrProvider):
-    """进程内加载 PaddleOCR 模型（离线，无需外部服务）"""
+    """进程内加载 PaddleOCR 模型 (离线, 无需外部服务)"""
 
     name = 'paddleocr'
     remote = False
@@ -32,7 +40,7 @@ class PaddleOcrLocal(OcrProvider):
             from paddleocr import PaddleOCR
         except ImportError as err:
             raise OcrError(
-                '未安装 PaddleOCR，请执行: pip install paddleocr paddlepaddle'
+                '未安装 PaddleOCR, 请执行: pip install paddleocr paddlepaddle'
             ) from err
         lang = self.config.get('lang', 'ch')
         use_gpu = str(self.config.get('use_gpu', 'false')).lower() == 'true'
@@ -74,7 +82,7 @@ class PaddleOcrLocal(OcrProvider):
 class PaddleOcrHttp(OcrProvider):
     """PaddleOCR hubserving / PaddleX HTTP 服务
 
-    期望响应形如::
+    期望响应形如:
 
         {"results": [[{"text": "abc", "text_region": [[x,y],...]}, ...]]}
     """
@@ -85,7 +93,7 @@ class PaddleOcrHttp(OcrProvider):
     def recognize(self, img_base64, project=None):
         url = self.config.get('url')
         if not url:
-            raise OcrError('未配置 OCR_URL（PaddleOCR HTTP 服务地址）')
+            raise OcrError('未配置 OCR_URL (PaddleOCR HTTP 服务地址)')
         timeout = int(self.config.get('timeout', 60))
         try:
             resp = requests.post(url, json={'images': [img_base64]}, timeout=timeout)

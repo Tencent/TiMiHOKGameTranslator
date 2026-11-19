@@ -24,7 +24,7 @@ logger = logging.getLogger('cache')
 
 
 def _json_loads_zlib(bjson, compress):
-    if compress and COMPRESS:  # 可能旧缓存还是json的
+    if compress and COMPRESS:  # 可能旧缓存还是 json 的
         try:
             return json_loads(zdecompress(bjson))
         except ZLIB_ERROR:
@@ -166,7 +166,7 @@ class JobRegressNumHash(TableBase):
             job = stat.get(row['parent_id'], {'id': row['parent_id'], 'children': []})
             job['children'].append(row['id'])
             stat[row['parent_id']] = job
-        if len(pks) != len(rows):  #防止频繁查询Job表。场景：查询不到时，补充默认值
+        if len(pks) != len(rows):  # 防止频繁查询 Job 表, 场景: 查询不到时, 补充默认值
             delt_pk_set = set(pks) - set(stat.keys())
             for pk in delt_pk_set:
                 stat[pk] = {'id': pk, 'children': []}
@@ -184,7 +184,7 @@ class JobBugNumHash(TableBase):
         stats = list(self.modal.objects.filter(**param).values('job_id').annotate(bug_num=Count('job_id')))
         if len(stats) == len(pks):
             return stats
-        # 防止频繁查询Bug表。场景：有些job没有产生bug
+        # 防止频繁查询 Bug 表, 场景: 有些 job 没有产生 bug
         delt_pks_set = set(pks) - set(map(lambda stat: stat['job_id'], stats))
         for pk_ in delt_pks_set:
             stats.append(self._gen(pk_))
@@ -205,7 +205,7 @@ class ImageBugNumHash(TableBase):
         stats = list(self.modal.objects.filter(**param).values('image_id').annotate(bug_num=Count('image_id')))
         if len(stats) == len(pks):
             return stats
-        # 防止频繁查询Bug表。场景：有些image没有产生bug
+        # 防止频繁查询 Bug 表, 场景: 有些 image 没有产生 bug
         delt_pks_set = set(pks) - set(map(lambda stat: stat['image_id'], stats))
         for pk_ in delt_pks_set:
             stats.append(self._gen(pk_))
@@ -357,7 +357,7 @@ class Lock(ConnectBase):
 
     def _require(self, ex, nx=False, xx=False):
         val = self._encode_val()
-        # NX:仅在键不存在时设置;XX:仅在键存在时设置;EX:设置键的过期时间，单位：秒
+        # NX: 仅在键不存在时设置; XX: 仅在键存在时设置; EX: 设置键的过期时间, 单位: 秒
         ok = self.client.set(self.key, val, nx=nx, xx=xx, ex=ex)
         if ok:
             self.current_val_str = val
@@ -365,7 +365,7 @@ class Lock(ConnectBase):
 
     def acquire(self, timeout=None):
         """
-        获取锁：场景1.如果锁key不存在，则占用；场景2：如果锁key存在但超时，则占用
+        获取锁: 场景 1.如果锁key不存在, 则占用; 场景2: 如果锁key存在但超时, 则占用
         :param timeout:
         :return:
         """
@@ -440,7 +440,7 @@ class Lock(ConnectBase):
 
 
 def try_lock(key, func, *args, flag='', timeout=15, raise_err=True, num=3, delay=0.1):
-    """重试lock"""
+    """重试 lock"""
     for idx in range(num):
         with Lock(key, flag, timeout, raise_err) as lock:
             if not lock:

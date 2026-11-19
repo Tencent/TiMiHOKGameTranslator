@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 # @file: test_lqa.py
-# @time: 2022/4/27 11:48
-# @desc: lqa本地化文本异常检测服务测试接口
+# @desc: LQA 本地化文本异常检测服务测试用例 (基于 unittest), 提供 LqaTestCase 类:
+#        - setUp: 读取默认 (或指定) 测试数据目录下的 screenShot.png (截图) 和
+#                     v3_result.json (标准文本框/图像框标注), 可选读取历史对比图
+#                     (LQA_TEST_HISTORY_IMG) 用于半监督历史先验测试, 初始化
+#                     language/check_type/supervised 等请求参数 (默认均为全量检测)
+#        - test_lqa: 携带 project-method 请求头调用 /image/lqa_check/ 接口,
+#                     打印检测结果详情 (check_detail) 及耗时, 并将返回的
+#                     mark_img(检测标记图)/rect_img(标准框标注图) 本地弹窗展示,
+#                     同时保存为 lqa_mark_img.png / lqa_rect_img.png 便于人工核验
+#        - tearDown: 关闭打开的图像/json文件句柄
+#
+#        服务地址与测试数据路径均可通过环境变量覆盖:
+#          LQA_TEST_HOST / LQA_TEST_PORT / LQA_TEST_DATA_DIR / LQA_TEST_PROJECT /
+#          LQA_TEST_HISTORY_IMG
+#
+#        用法: python tests/test_lqa.py (或 python -m unittest tests.test_lqa)
 """
 import json
 import time
@@ -15,7 +29,7 @@ from common.tools import base64_to_mat
 
 import os
 
-# 服务地址与测试数据路径均可通过环境变量覆盖：
+# 服务地址与测试数据路径均可通过环境变量覆盖:
 #   LQA_TEST_HOST / LQA_TEST_PORT / LQA_TEST_DATA_DIR
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test', '0')
 
@@ -34,7 +48,7 @@ class LqaTestCase(unittest.TestCase):
         self.supervised = None
         self.language = None
         self.check_type = None  # 默认全部异常类型
-        # 差异识别的历史图，未配置时不启用
+        # 差异识别的历史图, 未配置时不启用
         history_img_path = os.getenv("LQA_TEST_HISTORY_IMG", "")
         self.history_fd = None
         self.history_img_base64 = None

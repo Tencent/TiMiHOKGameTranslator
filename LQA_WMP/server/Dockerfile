@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     APP_DATA_ROOT=/data/n0 \
     APP_MEDIA_ROOT=/data/media_root
 
-# mysqlclient 编译依赖；opencv-headless 运行依赖 libglib2.0
+# mysqlclient 编译依赖; opencv-headless 运行依赖 libglib2.0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc pkg-config default-libmysqlclient-dev libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*

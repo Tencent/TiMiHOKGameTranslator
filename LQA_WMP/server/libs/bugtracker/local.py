@@ -1,4 +1,4 @@
-"""不对接外部系统：缺陷只记录在 LQA 平台内（lqa_bug 表）"""
+"""不对接外部系统: 缺陷只记录在 LQA 平台内 (lqa_bug 表)"""
 from typing import Dict, List
 
 from libs.util import datetime_ms

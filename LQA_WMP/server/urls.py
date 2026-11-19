@@ -5,7 +5,7 @@ from django.views.static import serve
 import settings
 
 urlpatterns = [
-    # 截图等上传文件。由登录中间件鉴权（MEDIA_PUBLIC=true 时允许匿名访问）
+    # 截图等上传文件, 由登录中间件鉴权 (MEDIA_PUBLIC=true 时允许匿名访问)
     # 访问量大时可改为由 Nginx 直接提供 APP_MEDIA_ROOT/media 目录
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': f'{settings.APP_MEDIA_ROOT}/media/'}),
     *import_string('lqa.urls.urlpatterns'),

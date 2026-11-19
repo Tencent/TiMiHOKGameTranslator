@@ -21,10 +21,10 @@ def time_ms():
 def datetime_ms(dt=None, del_tz=True):
     """
     dt: datetime
-    tz: 去除dt的tzinfo信息。 因为settings.USE_TZ一般设置为False，表示django处理datetime对时区无感知，如果dt带有tzinfo，存db时会报错
+    tz: 去除dt的tzinfo信息, 因为settings.USE_TZ一般设置为False, 表示django处理datetime对时区无感知, 如果dt带有tzinfo, 存db时会报错
 
-    由于django在json序列化时只保留了datetime毫秒的前3位。所以为了后端和前端使用一致，生成时间转换一下
-    这个方法目的是保留毫秒的前3位   2024-12-06T15:37:30.540123 => 2024-12-06T15:37:30.540000
+    由于django在json序列化时只保留了datetime毫秒的前3位, 所以为了后端和前端使用一致, 生成时间转换一下
+    这个方法目的是保留毫秒的前3位 2024-12-06T15:37:30.540123 => 2024-12-06T15:37:30.540000
     """
     if dt and del_tz and dt.tzinfo:
         dt = dt.replace(tzinfo=None)
@@ -134,11 +134,11 @@ def judge_rectangle(corners):
 
 
 def coordinate_trans(corners, height):
-    """坐标变换，将左下角为原点的坐标点转换为左上角为原点的坐标点，如果是标准矩形用(x,y,w,h)表示，如果非标准矩形用转换后的坐标点表示
+    """坐标变换, 将左下角为原点的坐标点转换为左上角为原点的坐标点, 如果是标准矩形用 (x,y,w,h) 表示, 如果非标准矩形用转换后的坐标点表示
     :param corners: dict, 位置信息
     :param height: int, 图像高度
-    :param is_rectangle: bool, 默认标准文本框， 返回思维向量，否则保持原4个点坐标
-    :return: 转化后的位置坐标(x1, y1, x2, y2)
+    :param is_rectangle: bool, 默认标准文本框, 返回思维向量, 否则保持原4个点坐标
+    :return: 转化后的位置坐标 (x1, y1, x2, y2)
     """
     is_rectangle = judge_rectangle(corners)
 
@@ -214,7 +214,7 @@ def make_item_array_validator(sep=',', item_class=int):
 
 
 def _seq_generator():
-    """简单生成序列，注意不是线程安全的"""
+    """简单生成序列, 注意不是线程安全的"""
     start = 1000
     num = start
     while True:
@@ -239,7 +239,7 @@ def get_client_ip(request) -> tuple[Exception, str]:
 
 def base64_encode_file_iter(file_path, chunk_size=1024*96, encode='utf-8'):
     """
-    对文件内容流式编码，减少内存开销
+    对文件内容流式编码, 减少内存开销
     file_path   文件名
     chunk_size  为了保持和整体编码一致 只能使用3的倍数 切记
     """
@@ -282,8 +282,8 @@ if __name__ == '__main__':
     # import json
     #
     # data = {"abc": now, "dt": datetime.date.today(), "tm": datetime.time(),
-    #         "content": "metaclass是Python面向对象里最难理解，也是最难使用的魔术代码。"
-    #                    "正常情况下，你不会碰到需要使用metaclass的情况，所以，以下内容看不懂也没关系，因为基本上你不会用到"}
+    #         "content": "metaclass 是 Python 面向对象里最难理解, 也是最难使用的魔术代码, "
+    #                    "正常情况下, 你不会碰到需要使用 metaclass 的情况, 所以, 以下内容看不懂也没关系, 因为基本上你不会用到"}
     #
     # data1 = json.dumps(data, cls=DjangoJSONEncoder)
     # print(f'json: {data1}')

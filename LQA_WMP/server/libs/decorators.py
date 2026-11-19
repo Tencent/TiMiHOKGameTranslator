@@ -21,7 +21,7 @@ def _validate_ticket(ticket):
 
 
 def require_ticket(func):
-    """验证ticket"""
+    """验证 ticket"""
     @functools.wraps(func)
     def _inner(request, *args, **kwargs):
         ticket = request.headers.get('LQA-Ticket', None)
@@ -91,7 +91,7 @@ def test_project_user_role_by_project_ids(user_info, project_ids, check_roles, a
 
 
 def require_project_perm(roles=DEFAULT_CHECK_PROJECT_ROLES, allow_super=True):
-    """装饰器：检查用户在项目中的角色"""
+    """装饰器: 检查用户在项目中的角色"""
     def decorator(func):
         @functools.wraps(func)
         def _inner(request, *args, **kwargs):
@@ -101,7 +101,7 @@ def require_project_perm(roles=DEFAULT_CHECK_PROJECT_ROLES, allow_super=True):
                 try:
                     body_json = orjson.loads(request.body)
                     project_id = int(body_json.get(key, 0))
-                    request.body_json = body_json  # 标记一下，不用重复json解析了
+                    request.body_json = body_json  # 标记一下, 不用重复 json 解析了
                 except Exception as err:
                     pass
             code = ''

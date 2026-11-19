@@ -3,19 +3,19 @@ Bugzilla 5.x REST API 适配
 文档: https://bugzilla.readthedocs.io/en/5.0/api/index.html
 
 项目配置:
-  base_url   Bugzilla 地址，如 https://bugzilla.example.com
+  base_url   Bugzilla 地址, 如 https://bugzilla.example.com
   api_key    用户偏好设置 > API Keys 中生成的 Key
-  product    产品名称（必填）
-  component  组件名称（必填）
-  extra      可选 JSON：
-     default_version   未选择“发现版本”时使用的版本，默认 unspecified
+  product    产品名称 (必填)
+  component  组件名称 (必填)
+  extra      可选 JSON:
+     default_version   未选择 “发现版本” 时使用的版本, 默认 unspecified
      op_sys / platform 默认 All
-     close_status      回归通过时的目标状态，默认 RESOLVED
+     close_status      回归通过时的目标状态, 默认 RESOLVED
      close_resolution  默认 FIXED
-     reopen_status     回归失败时的目标状态，默认 CONFIRMED（Bugzilla 4.0+ 默认工作流）
+     reopen_status     回归失败时的目标状态, 默认 CONFIRMED (Bugzilla 4.0+ 默认工作流)
      priority_map      {"1": "Highest", ...}  覆盖 LQA 优先级 -> Bugzilla 优先级映射
      severity_map      {"1": "critical", ...} 覆盖 LQA 严重程度 -> Bugzilla 严重程度映射
-     assignee_field    email(默认，使用LQA用户邮箱) / name(直接使用LQA用户名)
+     assignee_field    email(默认, 使用LQA用户邮箱) / name (直接使用LQA用户名)
 """
 import base64
 import mimetypes
@@ -142,7 +142,7 @@ class BugzillaTracker(BugTracker):
         text = html_to_text(comment)
         bug = self.get_bugs([bug_id]).get(str(bug_id))
         if bug and bug.is_open and not bug.status.startswith('RESOLVED'):
-            # 缺陷仍处于打开状态（开发尚未处理），只追加评论
+            # 缺陷仍处于打开状态 (开发尚未处理), 只追加评论
             self._req('POST', f'bug/{bug_id}/comment', json={'comment': text})
         else:
             body = {'status': self.extra.get('reopen_status', 'CONFIRMED'), 'comment': {'body': text}}
@@ -184,7 +184,7 @@ class BugzillaTracker(BugTracker):
     def test_connection(self) -> str:
         self.get_options()      # 校验 API Key 与产品
         try:
-            who = self._req('GET', 'whoami')    # 部分 5.0.x 版本不支持，失败不影响
-            return f"连接成功，当前账号: {who.get('name') or who.get('real_name') or '-'}"
+            who = self._req('GET', 'whoami')    # 部分 5.0.x 版本不支持, 失败不影响
+            return f"连接成功, 当前账号: {who.get('name') or who.get('real_name') or '-'}"
         except BugTrackerError:
             return '连接成功'

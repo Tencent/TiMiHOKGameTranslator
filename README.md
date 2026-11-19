@@ -68,7 +68,7 @@ flowchart LR
 
 ### 1. 翻译工具链 · `timi_hok_game_translator`
 
-游戏文本的 AI 翻译工具链，**已适配混元 MT3（[Hy-MT3](https://git.woa.com/jasonzli/Hy-MT3)）**。混元翻译模型系列支持 33 种语言互译，具备术语干预、风格控制、分隔符保留、结构化数据（JSON / XML 等）翻译等指令遵循能力，适合游戏文本里大量的占位符、富文本标签和专有名词。产出的 `key→译文` 表可以直接给还原端使用。
+游戏文本的 AI 翻译工具链，**已适配混元 MT3（[Hy-MT3](https://github.com/Tencent-Hunyuan/Hy-MT3)）**。混元翻译模型系列支持 33 种语言互译，具备术语干预、风格控制、分隔符保留、结构化数据（JSON / XML 等）翻译等指令遵循能力，适合游戏文本里大量的占位符、富文本标签和专有名词。产出的 `key→译文` 表可以直接给还原端使用。
 
 ### 2. 评测集 · `GameTrans_EvalSet`
 

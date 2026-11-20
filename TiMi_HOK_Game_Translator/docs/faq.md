@@ -77,8 +77,6 @@ A：`OpenAILLM` 的 system prompt 已经要求模型保留占位符，
 A：把它做成独立 PyPI 包（公共或私有源都行）。把 `register_*` 调用
 放在包的 `__init__.py`，只需 `import 你的包` 即可完成注册。
 
-## 参与贡献
-
 **Q：我的 PR 至少要兼容哪些 Python 版本？**
 A：3.8 – 3.12。CI 矩阵会强制校验。请避免 `list[int]` / `dict[str, X]` /
 `X | None` 语法，改用 `typing` 里的 `List[int]` 等。

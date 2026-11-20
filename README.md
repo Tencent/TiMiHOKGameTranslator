@@ -2,7 +2,7 @@
 
 ![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg) ![engine](https://img.shields.io/badge/engine-Unity%20%7C%20Unreal-2ea44f.svg) ![hunyuan](https://img.shields.io/badge/%E6%B7%B7%E5%85%83%20MT3-%E5%B7%B2%E9%80%82%E9%85%8D-orange.svg)
 
-**TiMiHOKGameTranslator** 由 *腾讯游戏 天美L1工作室 王者荣耀项目组* 开源，面向游戏出海多语言版本，解决游戏翻译领域特有的「**超框、漏译、游戏专有名词不一致**」等问题，极大提高人工翻译校注介入前的Ai翻译入库/LQA效率，覆盖从「**AI 翻译**」到「**本地化质量检查（LQA）**」的完整链路：
+**TiMiHOKGameTranslator** 由 *腾讯游戏 天美L1工作室 王者荣耀项目组* 开源，面向游戏出海多语言版本，解决游戏翻译领域特有的「**超框、漏译、游戏专有名词不一致**」等问题，极大提高人工翻译校注介入前的AI翻译入库/LQA效率，覆盖从「**AI 翻译**」到「**本地化质量检查（LQA）**」的完整链路：
 
 - **翻译**：游戏文本 AI 翻译工具链 + 多品类游戏翻译评测集
 - **采集**：Unity / UE 运行时插件，一键导出 UI 节点树、文本、本地化 Key 和截图

@@ -97,5 +97,26 @@ namespace LQATool.Utils
             // 兜底: 未命中任何 UI 组件, 视为普通 Transform 对象
             return "Transform";
         }
+
+        /// <summary>
+        /// 跨 Unity 版本安全获取对象的实例标识, 仅用于日志/Dump JSON 里做 "本次运行期间" 的调试定位,
+        /// 不保证跨进程、跨版本数值稳定, 禁止用于持久化存储或跨版本比对
+        /// 版本分界: Unity 6000.4 (6.4) 起 Object.GetInstanceID() 被官方标记为 Obsolete(error: true),
+        /// 不再通过编译; Unity 7000.0 起该方法被彻底移除, 必须改用 GetEntityId()
+        /// </summary>
+        /// <param name="obj">待获取标识的对象, 允许为 null</param>
+        /// <returns>对象的实例标识数值, obj 为 null 时返回 0</returns>
+        public static long GetStableInstanceId(Object obj)
+        {
+            if (obj == null) return 0;
+
+#if UNITY_6000_4_OR_NEWER
+            // 6000.4+: 官方新 ID 体系, 不能直接 (int) 强转 (会截断高位), 按官方建议转 ulong 再收窄成 long
+            return (long)EntityId.ToULong(obj.GetEntityId());
+#else
+            // 6000.4 之前: 原生 API 仍可用, 行为与改造前完全一致
+            return obj.GetInstanceID();
+#endif
+        }
     }
 }

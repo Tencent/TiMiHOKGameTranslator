@@ -68,9 +68,10 @@ namespace LQATool.Utils
 
             #endif
 
-            // InstanceID 是运行期的实例标识 (int), 每次运行可能变化,
+            // InstanceID 是运行期的实例标识, 每次运行可能变化,
             // 但可用于本次会话内定位对象, 数值直接输出无需引号
-            int instanceID = asset.GetInstanceID();
+            // (Unity 6000.4+ 原生 GetInstanceID() 已被标记为编译错误, 改走 GetStableInstanceId 做版本兼容)
+            long instanceID = UIHelper.GetStableInstanceId(asset);
 
             // 拼装并返回最终的 JSON 对象片段
             return $"{{\"name\": {nameJson}, \"assetPath\": {assetPathJson}, \"guid\": {guidJson}, \"instanceID\": {instanceID}}}";
@@ -118,7 +119,8 @@ namespace LQATool.Utils
             string typeJson = $"\"{JsonBuilder.EscapeJson(obj.GetType().Name)}\"";
 
             // 传入对象自身的运行期实例 ID
-            int instanceID = obj.GetInstanceID();
+            // (Unity 6000.4+ 原生 GetInstanceID() 已被标记为编译错误, 改走 GetStableInstanceId 做版本兼容)
+            long instanceID = UIHelper.GetStableInstanceId(obj);
 
             // 拼装并返回最终的 JSON 对象片段
             return $"{{\"name\": {nameJson}, \"path\": {pathJson}, \"type\": {typeJson}, \"instanceID\": {instanceID}}}";

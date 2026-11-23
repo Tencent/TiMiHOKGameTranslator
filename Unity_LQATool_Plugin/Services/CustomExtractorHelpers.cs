@@ -169,7 +169,8 @@ namespace LQATool.Services
             if (comp == null) return;
 
             var sb = new StringBuilder();
-            sb.Append("[LQATool][CustomExtractorHelpers] 转储组件 ").Append(comp.GetType().FullName).Append(" 位于 '").Append(comp.name).Append("' (InstanceID=").Append(comp.GetInstanceID()).Append(")\n");
+            // (Unity 6000.4+ 原生 GetInstanceID() 已被标记为编译错误, 改走 UIHelper.GetStableInstanceId 做版本兼容)
+            sb.Append("[LQATool][CustomExtractorHelpers] 转储组件 ").Append(comp.GetType().FullName).Append(" 位于 '").Append(comp.name).Append("' (InstanceID=").Append(UIHelper.GetStableInstanceId(comp)).Append(")\n");
 
             // 收集从子类到基类 (Object 除外) 的完整继承链, 后续按声明层级分块打印
             var chain = new System.Collections.Generic.List<Type>();

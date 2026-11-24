@@ -1,3 +1,7 @@
+<div align="center">
+  <strong>简体中文</strong> · <a href="./README.en.md">English</a>
+</div>
+
 # TiMi峡谷游译官TiMiHOKGameTranslator · 游戏本地化翻译与自动化测试开源工程
 
 ![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg) ![engine](https://img.shields.io/badge/engine-Unity%20%7C%20Unreal-2ea44f.svg) ![hunyuan](https://img.shields.io/badge/%E6%B7%B7%E5%85%83%20MT3-%E5%B7%B2%E9%80%82%E9%85%8D-orange.svg)
